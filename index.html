@@ -129,10 +129,10 @@
             di.appendChild(sp)
             b[0].forEach((c, d, e) => {
                 let s = span.cloneNode()
-                let g = ((parseFloat(e[d + 1]) / parseFloat(c)) -1)*10
+                let g = parseFloat(e[d + 1]) - parseFloat(c)
                 g = isNaN(g) ? 0 : g.toFixed(2)
                 g = !isFinite(parseFloat(g)) ? 0 : g
-                if (g > 1) {
+                if (g > 0) {
                     s.style.height = parseFloat(g) * parseFloat(dataScale.value) + "px" }
                 else {
                     s.classList.add('empty')
@@ -145,7 +145,7 @@
         })
     }
 
-    const confirmed = `time_series_19-covid-Confirmed.csv`
+    const confirmed = `/time_series_19-covid-Confirmed.csv`
     getValues(confirmed)
     dataCountry.addEventListener('change', () => getValues(confirmed))
     dataScale.addEventListener('change', () => getValues(confirmed))
