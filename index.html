@@ -107,7 +107,6 @@
                 .then(async data => {
                     all = {}
                     section.innerHTML = ""
-                    console.log({data})
                     data.split('\r\n').map(a => a.replace(", ", " ").replace(/"/g, ``)).map(e => {
                         let f = e.split(",")
                         if (!countries.includes(f[1]) && f[1].length > 5) countries.push(f[1])
@@ -123,6 +122,7 @@
     }
 
     const showValues = () => {
+        console.log({all})
         Object.entries(all).map(([a, b]) => {
             let di = div.cloneNode()
             let sp = span.cloneNode()
