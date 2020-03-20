@@ -95,8 +95,10 @@
             this.all = {}
             this.section = document.querySelector('section')
             this.confirmed = `time_series_19-covid-Confirmed.csv`
+
             this.country = document.querySelector('#country')
             this.country.addEventListener('change', () => this.getValues())
+
             this.scale = document.querySelector('#scale')
             this.scale.addEventListener('change', () => this.getValues())
             this.getValues()
@@ -136,7 +138,7 @@
                 b[0].forEach((c, d, e) => {
 
                     let bar = document.createElement('span')
-                    let g = parseFloat(e[d + 1]) - parseFloat(c)
+                    let g = Math.log10(parseFloat(e[d + 1]) - parseFloat(c))*10
                     g = isNaN(g) ? 0 : g.toFixed(2)
                     g = !isFinite(parseFloat(g)) ? 0 : g
                     if (g > 0) {
