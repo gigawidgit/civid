@@ -89,8 +89,6 @@
 </section>
 <script>
     let all = {}
-
-    let countries = []
     const section = document.querySelector('section')
     const div = document.createElement('div')
     const span = document.createElement('span')
@@ -109,7 +107,7 @@
                     section.innerHTML = ""
                     data.split('\r\n').map(a => a.replace(", ", " ").replace(/"/g, ``)).map(e => {
                         let f = e.split(",")
-                        if (!countries.includes(f[1]) && f[1].length > 5) countries.push(f[1])
+                        console.log({e})
                         if (f[1] === dataCountry.value) all[f[0]] = [f.slice(4),f[1]]
                     })
                 }).then(e => {
