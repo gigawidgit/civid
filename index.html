@@ -89,66 +89,75 @@
 <section>
 </section>
 <script>
-    let all = {}
-    const section = document.querySelector('section')
-    const div = document.createElement('div')
-    const span = document.createElement('span')
-    const dataCountry = document.querySelector('#country')
-    const dataScale = document.querySelector('#scale')
 
-    const getValues = async file => {
-        try {
-            await fetch(file)
-                .then(response => {
-                    if (!response.ok) throw Error(response.statusText)
-                    return response.text()
-                })
-                .then(async data => {
-                    all = {}
-                    section.innerHTML = ""
-                    let a = data.split('\r\n')
-                    let b = a.map(a => a.replace(", ", " "))
-                    let c = b.map(j=>j.replace(/"/g, ''))
-                    let d = c.map(e => {
-                        let f = e.split(",")
-                        if (f[1] === dataCountry.value) all[f[0]] = [f.slice(4), f[1]]
-                    })
-                }).then(e => {
-                    showValues()
-                });
-        } catch (err) {
-            return false
+    class Graph {
+        constructor() {
+            this.all = {}
+            this.section = document.querySelector('section')
+            this.div = document.createElement('div')
+            this.span = document.createElement('span')
+            this.dataCountry = document.querySelector('#country')
+            this.dataScale = document.querySelector('#scale')
+            this.confirmed = `time_series_19-covid-Confirmed.csv`
+
+            this.getValues(this.confirmed)
+            this.dataCountry.addEventListener('change', () => this.getValues(this.confirmed))
+            this.dataScale.addEventListener('change', () => this.getValues(this.confirmed))
+
         }
-    }
-
-    const showValues = () => {
-        Object.entries(all).map(([a, b]) => {
-            let di = div.cloneNode()
-            let sp = span.cloneNode()
-            sp.innerHTML = `${b[1]} - ${a}`
-            di.appendChild(sp)
-            b[0].forEach((c, d, e) => {
-                let s = span.cloneNode()
-                let g = parseFloat(e[d + 1]) - parseFloat(c)
-                g = isNaN(g) ? 0 : g.toFixed(2)
-                g = !isFinite(parseFloat(g)) ? 0 : g
-                if (g > 0) {
-                    s.style.height = parseFloat(g) * parseFloat(dataScale.value) + "px"
-                } else {
-                    s.classList.add('empty')
-                    s.style.height = "100%"
-                }
-                di.style.width = 210 + (3 * b.length) + "px"
-                di.appendChild(s)
+        async getValues (file) {
+            try {
+                await fetch(file)
+                    .then(response => {
+                        if (!response.ok) throw Error(response.statusText)
+                        return response.text()
+                    })
+                    .then(async data => {
+                        this.all = {}
+                        this.section.innerHTML = ""
+                        let a = data.split('\r\n')
+                        let b = a.map(a => a.replace(", ", " "))
+                        let c = b.map(j=>j.replace(/"/g, ''))
+                        let d = c.map(e => {
+                            let f = e.split(",")
+                            if (f[1] === this.dataCountry.value) this.all[f[0]] = [f.slice(4), f[1]]
+                        })
+                    }).then(e => {
+                        this.showValues()
+                    });
+            } catch (err) {
+                return false
+            }
+        }
+        async showValues () {
+            Object.entries(this.all).map(([a, b]) => {
+                let di = this.div.cloneNode()
+                let sp = this.span.cloneNode()
+                sp.innerHTML = `${b[1]} - ${a}`
+                di.appendChild(sp)
+                b[0].forEach((c, d, e) => {
+                    let s = this.span.cloneNode()
+                    let g = parseFloat(e[d + 1]) - parseFloat(c)
+                    g = isNaN(g) ? 0 : g.toFixed(2)
+                    g = !isFinite(parseFloat(g)) ? 0 : g
+                    if (g > 0) {
+                        s.style.height = parseFloat(g) * parseFloat(this.dataScale.value) + "px"
+                    } else {
+                        s.classList.add('empty')
+                        s.style.height = "100%"
+                    }
+                    di.style.width = 210 + (3 * b.length) + "px"
+                    di.appendChild(s)
+                })
+                this.section.appendChild(di)
             })
-            section.appendChild(di)
-        })
+        }
+
     }
 
-    const confirmed = `time_series_19-covid-Confirmed.csv`
-    getValues(confirmed)
-    dataCountry.addEventListener('change', () => getValues(confirmed))
-    dataScale.addEventListener('change', () => getValues(confirmed))
+    const graph = new Graph()
+
+
 </script>
 </body>
 </html>
