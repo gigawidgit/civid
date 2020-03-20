@@ -120,7 +120,10 @@
                         let c = b.map(j=>j.replace(/"/g, ''))
                         let d = c.map(e => {
                             let f = e.split(",")
-                            if (f[1] === this.dataCountry.value) this.all[f[0]] = [f.slice(4), f[1]]
+                            if (f[1] === this.dataCountry.value) {
+                                console.log({f})
+                                this.all[f[0]] = [f.slice(4), f[1]]
+                            }
                         })
                     }).then(e => {
                         console.log(this.all)
