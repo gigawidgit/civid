@@ -123,6 +123,7 @@
                             if (f[1] === this.dataCountry.value) this.all[f[0]] = [f.slice(4), f[1]]
                         })
                     }).then(e => {
+                        console.log(this.all)
                         this.showValues()
                     });
             } catch (err) {
