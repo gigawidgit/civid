@@ -115,10 +115,13 @@
                     .then(async data => {
                         this.all = {}
                         this.section.innerHTML = ""
-                        data.split('\r\n').map(e => {
-                            console.log({e})
+                        data.split(/[\n\r|\r|\n\r|\n]/).map(e => {
                             const f = e.replace(`, `,` `).replace(/"/gi,``)
+
                             const g = f.split(`,`)
+                            console.log({e})
+                            console.log({f})
+                            console.log({g})
                             if (g[1] === this.dataCountry.value)  this.all[g[0]] = [g.slice(4), g[1]]
                         })
                     }).then(e => {
