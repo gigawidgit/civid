@@ -116,13 +116,10 @@
                         this.all = {}
                         this.section.innerHTML = ""
                         data.split('\r\n').map(e => {
-                            let f = e.replace(`, `,` `).replace(/"/gi,``).split(`,`)
-                            console.log({f})
-
-
-                            if (f[1] === this.dataCountry.value) {
-                                this.all[f[0]] = [f.slice(4), f[1]]
-                            }
+                            console.log({e})
+                            const f = e.replace(`, `,` `).replace(/"/gi,``)
+                            const g = f.split(`,`)
+                            if (g[1] === this.dataCountry.value)  this.all[g[0]] = [g.slice(4), g[1]]
                         })
                     }).then(e => {
                         this.showValues()
