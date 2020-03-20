@@ -96,9 +96,9 @@
             this.section = document.querySelector('section')
             this.confirmed = `time_series_19-covid-Confirmed.csv`
             this.country = document.querySelector('#country')
-            this.country.addEventListener('change', () => this.getValues)
+            this.country.addEventListener('change', () => this.getValues())
             this.scale = document.querySelector('#scale')
-            this.scale.addEventListener('change', () => this.getValues)
+            this.scale.addEventListener('change', () => this.getValues())
             this.getValues()
         }
 
