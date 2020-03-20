@@ -94,20 +94,17 @@
         constructor() {
             this.all = {}
             this.section = document.querySelector('section')
-            this.div = document.createElement('div')
-            this.span = document.createElement('span')
-            this.dataCountry = document.querySelector('#country')
-            this.dataScale = document.querySelector('#scale')
             this.confirmed = `time_series_19-covid-Confirmed.csv`
-
-            this.getValues(this.confirmed)
-            this.dataCountry.addEventListener('change', () => this.getValues(this.confirmed))
-            this.dataScale.addEventListener('change', () => this.getValues(this.confirmed))
-
+            this.country = document.querySelector('#country')
+            this.country.addEventListener('change', () => this.getValues)
+            this.scale = document.querySelector('#scale')
+            this.scale.addEventListener('change', () => this.getValues)
+            this.getValues()
         }
-        async getValues (file) {
+
+        async getValues(file) {
             try {
-                await fetch(file)
+                await fetch(file || this.confirmed)
                     .then(response => {
                         if (!response.ok) throw Error(response.statusText)
                         return response.text()
@@ -115,51 +112,48 @@
                     .then(async data => {
                         this.all = {}
                         this.section.innerHTML = ""
-                        data.split(/[\n\r|\r|\n\r|\n]/).map(e => {
-                            const f = e.replace(`, `,` `).replace(/"/gi,``)
 
-                            const g = f.split(`,`)
-                            console.log({e})
-                            console.log({f})
-                            console.log({g})
-                            if (g[1] === this.dataCountry.value)  this.all[g[0]] = [g.slice(4), g[1]]
+                        data.split(/[\n\r|\r|\n\r|\n]/gi).map(line => {
+                            const val = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
+                            if (val[1] === this.country.value) this.all[val[0]] = [val.slice(4), val[1]]
                         })
-                    }).then(e => {
-                        this.showValues()
-                    });
+
+                    }).then(() => this.showValues());
             } catch (err) {
+                console.log({err})
                 return false
             }
         }
-        async showValues () {
+
+        async showValues() {
             Object.entries(this.all).map(([a, b]) => {
-                let di = this.div.cloneNode()
-                let sp = this.span.cloneNode()
-                sp.innerHTML = `${b[1]} - ${a}`
-                di.appendChild(sp)
+
+                let div = document.createElement('div')
+                let span = document.createElement('span')
+                span.innerHTML = `${b[1]} - ${a}`
+
+                div.appendChild(span)
                 b[0].forEach((c, d, e) => {
-                    let s = this.span.cloneNode()
+
+                    let bar = document.createElement('span')
                     let g = parseFloat(e[d + 1]) - parseFloat(c)
                     g = isNaN(g) ? 0 : g.toFixed(2)
                     g = !isFinite(parseFloat(g)) ? 0 : g
                     if (g > 0) {
-                        s.style.height = parseFloat(g) * parseFloat(this.dataScale.value) + "px"
+                        bar.style.height = parseFloat(g) * parseFloat(this.scale.value) + "px"
                     } else {
-                        s.classList.add('empty')
-                        s.style.height = "100%"
+                        bar.classList.add('empty')
                     }
-                    di.style.width = 210 + (3 * b.length) + "px"
-                    di.appendChild(s)
+
+                    div.style.width = 210 + (3 * b.length) + "px"
+                    div.appendChild(bar)
                 })
-                this.section.appendChild(di)
+                this.section.appendChild(div)
             })
         }
-
     }
 
     const graph = new Graph()
-
-
 </script>
 </body>
 </html>
