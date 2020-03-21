@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Visualizing CSSE at Johns Hopkins University's Data</title>
     <style>
         section {
             display: flex;
@@ -74,6 +74,14 @@
             background: #fefefe !important;
         }
 
+        span.deaths {
+            background: #ff0000 !important;
+        }
+
+        span.recovered {
+            background: #0000FF !important;
+        }
+
     </style>
 </head>
 <body>
@@ -84,6 +92,24 @@
         </label></li>
         <li><label for="Scale">Scale </label>
             <input type="range" name="Scale" id="scale" value="2" min="0.02" max="4" step="0.02"/></li>
+<!--        <li><label for="confirmed">Confirmed-->
+<!--            <input type="checkbox" checked="checked" disabled id="confirmed" name="confirmed"/>-->
+<!--        </label></li>-->
+<!--        <li><label for="deaths">Deaths-->
+<!--            <input type="checkbox" id="deaths" name="deaths"/>-->
+<!--        </label></li>-->
+<!--        <li><label for="recovered">Recovered-->
+<!--            <input type="checkbox" id="recovered" name="recovered"/>-->
+<!--        </label></li>-->
+
+<!--        <li><label for="log">Log10-->
+<!--            <input type="radio" id="log" name="type"/></label>-->
+<!--            <label for="unit">Unit-->
+<!--                <input type="radio" id="unit" name="type"/>-->
+<!--            </label><label for="percent">Percent-->
+<!--                <input type="radio" id="percent" name="type"/>-->
+<!--            </label></li>-->
+
     </ul>
 </main>
 <section>
@@ -95,6 +121,14 @@
             this.all = {}
             this.section = document.querySelector('section')
             this.confirmed = `time_series_19-covid-Confirmed.csv`
+            this.deaths = `time_series_19-covid-Deaths.csv`
+            this.recovered = `time_series_19-covid-Recovered.csv`
+
+            // this.dinput = document.querySelector('#deaths')
+            // this.dinput.addEventListener('change', () => this.getValues())
+
+            // this.rinput = document.querySelector('#recovered')
+            // this.rinput.addEventListener('change', () => this.getValues())
 
             this.country = document.querySelector('#country')
             this.country.addEventListener('change', () => this.getValues())
@@ -104,9 +138,9 @@
             this.getValues()
         }
 
-        async getValues(file) {
+        async fetchValues(file, type) {
             try {
-                await fetch(file || this.confirmed)
+                await fetch(file)
                     .then(response => {
                         if (!response.ok) throw Error(response.statusText)
                         return response.text()
@@ -120,35 +154,55 @@
                             if (val[1] === this.country.value) this.all[val[0]] = [val.slice(4), val[1]]
                         })
 
-                    }).then(() => this.showValues());
+                    }).then(() => this.showValues(type));
             } catch (err) {
                 console.log({err})
                 return false
             }
         }
 
-        async showValues() {
-            Object.entries(this.all).map(([a, b]) => {
+        async getValues(file) {
+            const files = [this.confirmed]
+            files.forEach((a, b) => {
+                this.fetchValues(a, b)
+            })
 
+        }
+
+        async showValues(type) {
+            Object.entries(this.all).map(([a, b],divnum) => {
+                let prevDiv
                 let div = document.createElement('div')
                 let span = document.createElement('span')
+
                 span.innerHTML = `${b[1]} - ${a}`
 
                 div.appendChild(span)
                 b[0].forEach((c, d, e) => {
-
+                    let prev
                     let bar = document.createElement('span')
-                    let g = Math.log10(parseFloat(e[d + 1]) - parseFloat(c))*10
+                    let g = Math.log10(parseFloat(e[d + 1]) / parseFloat(c)) * 100
                     g = isNaN(g) ? 0 : g.toFixed(2)
                     g = !isFinite(parseFloat(g)) ? 0 : g
                     if (g > 0) {
+                        if (type > 0) {
+                            prevDiv = document.querySelectorAll('div')
+                            console.log(prevDiv)
+                        }
+                        if (type === 1) {
+                            bar.classList.add('deaths')
+                        } else if (type === 2) {
+                            bar.classList.add('recovered')
+                        }
                         bar.style.height = parseFloat(g) * parseFloat(this.scale.value) + "px"
+
                     } else {
                         bar.classList.add('empty')
                     }
 
-                    div.style.width = 210 + (3 * b.length) + "px"
+                    div.style.width = 210 + (3 * b.length) + "px";
                     div.appendChild(bar)
+
                 })
                 this.section.appendChild(div)
             })
