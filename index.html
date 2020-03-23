@@ -71,7 +71,8 @@
         }
 
         span.empty {
-            background: #fefefe !important;
+            /*background: red !important;*/
+            height: 0;
         }
 
         span.deaths {
@@ -90,25 +91,23 @@
         <li><label for="Country">Country
             <input name="Country" id="country" value="Canada" type="text"/>
         </label></li>
-        <li><label for="Scale">Scale </label>
-            <input type="range" name="Scale" id="scale" value="2" min="0.02" max="4" step="0.02"/></li>
-<!--        <li><label for="confirmed">Confirmed-->
-<!--            <input type="checkbox" checked="checked" disabled id="confirmed" name="confirmed"/>-->
-<!--        </label></li>-->
-<!--        <li><label for="deaths">Deaths-->
-<!--            <input type="checkbox" id="deaths" name="deaths"/>-->
-<!--        </label></li>-->
-<!--        <li><label for="recovered">Recovered-->
-<!--            <input type="checkbox" id="recovered" name="recovered"/>-->
-<!--        </label></li>-->
 
-<!--        <li><label for="log">Log10-->
-<!--            <input type="radio" id="log" name="type"/></label>-->
-<!--            <label for="unit">Unit-->
-<!--                <input type="radio" id="unit" name="type"/>-->
-<!--            </label><label for="percent">Percent-->
-<!--                <input type="radio" id="percent" name="type"/>-->
-<!--            </label></li>-->
+
+        <li><label for="confirmed">Confirmed
+            <input type="checkbox" checked="checked" disabled id="confirmed" name="confirmed"/>
+        </label><label for="deaths">Deaths
+            <input type="checkbox" id="deaths" name="deaths"/>
+        </label><label for="recovered">Recovered
+            <input type="checkbox" id="recovered" name="recovered"/>
+        </label></li>
+
+        <li><label for="totals">Totals
+            <input type="radio" id="totals" name="unit"/></label>
+            <label for="change">Change
+                <input type="radio" id="change" name="unit"/>
+            </label><label for="growth">Growth Factor
+                <input type="radio" id="growth" name="unit"/>
+            </label></li>
 
     </ul>
 </main>
@@ -124,22 +123,38 @@
             this.deaths = `time_series_19-covid-Deaths.csv`
             this.recovered = `time_series_19-covid-Recovered.csv`
 
-            // this.dinput = document.querySelector('#deaths')
-            // this.dinput.addEventListener('change', () => this.getValues())
+            this.dinput = document.querySelector('#deaths')
+            this.rinput = document.querySelector('#recovered')
+            this.cinput = document.querySelector('#country')
 
-            // this.rinput = document.querySelector('#recovered')
-            // this.rinput.addEventListener('change', () => this.getValues())
+            this.tinput = document.querySelector('#totals')
+            this.chinput = document.querySelector('#change')
+            this.ginput = document.querySelector('#growth')
 
-            this.country = document.querySelector('#country')
-            this.country.addEventListener('change', () => this.getValues())
+            const inputs = ["d", "r", "c", "t", "ch", "g"]
+            inputs.forEach(val => {
+                let input = this[`${val}input`]
+                let that = this
+                input.addEventListener('change', () => that.getValues())
+            })
 
-            this.scale = document.querySelector('#scale')
-            this.scale.addEventListener('change', () => this.getValues())
             this.getValues()
+        }
+
+        async getValues() {
+            const files = [this.confirmed, this.deaths, this.recovered]
+            const types = ["confirmed","deaths","recovered"]
+
+            this.section.innerHTML = ""
+            files.forEach((a, b) => {
+                this.fetchValues(a, types[b])
+            })
+
         }
 
         async fetchValues(file, type) {
             try {
+                console.log(file, type)
                 await fetch(file)
                     .then(response => {
                         if (!response.ok) throw Error(response.statusText)
@@ -147,65 +162,47 @@
                     })
                     .then(async data => {
                         this.all = {}
-                        this.section.innerHTML = ""
+                        this.all[type] = {}
 
                         data.split(/[\n\r|\r|\n\r|\n]/gi).map(line => {
                             const val = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
-                            if (val[1] === this.country.value) this.all[val[0]] = [val.slice(4), val[1]]
+                            if (val[1] === this.cinput.value) this.all[type][val[0]] = [val.slice(4), val[1]]
                         })
 
-                    }).then(() => this.showValues(type));
+                    }).then(() => this.showValues());
             } catch (err) {
                 console.log({err})
                 return false
             }
         }
 
-        async getValues(file) {
-            const files = [this.confirmed]
-            files.forEach((a, b) => {
-                this.fetchValues(a, b)
-            })
 
-        }
-
-        async showValues(type) {
-            Object.entries(this.all).map(([a, b],divnum) => {
-                let prevDiv
+        async showValues() {
+            Object.values(this.all).forEach((val,ind)=>
+                Object.entries(val).map(([a, b]) => {
                 let div = document.createElement('div')
                 let span = document.createElement('span')
-
                 span.innerHTML = `${b[1]} - ${a}`
 
                 div.appendChild(span)
                 b[0].forEach((c, d, e) => {
-                    let prev
                     let bar = document.createElement('span')
-                    let g = Math.log10(parseFloat(e[d + 1]) / parseFloat(c)) * 100
-                    g = isNaN(g) ? 0 : g.toFixed(2)
-                    g = !isFinite(parseFloat(g)) ? 0 : g
-                    if (g > 0) {
-                        if (type > 0) {
-                            prevDiv = document.querySelectorAll('div')
-                            console.log(prevDiv)
-                        }
-                        if (type === 1) {
-                            bar.classList.add('deaths')
-                        } else if (type === 2) {
-                            bar.classList.add('recovered')
-                        }
-                        bar.style.height = parseFloat(g) * parseFloat(this.scale.value) + "px"
-
-                    } else {
-                        bar.classList.add('empty')
-                    }
+                    // let i = Math.abs(parseFloat(e[d + 1]) - parseFloat(c))/Math.abs(parseFloat(c) - parseFloat(e[d - 1]))
+                    // let i = parseFloat(c) - parseFloat(e[d - 1])
+                    let i = c
+                    // i = (!isNaN(i) && isFinite(i)) ? i : false
+                    // if (i) {
+                    bar.style.height = Math.log10(i) *10 + "px"
+                    // } else {
+                    //     bar.classList.add('empty')
+                    // }
 
                     div.style.width = 210 + (3 * b.length) + "px";
                     div.appendChild(bar)
 
                 })
                 this.section.appendChild(div)
-            })
+            }))
         }
     }
 
