@@ -27,7 +27,6 @@
         span {
             width: 2px;
             display: flex;
-            margin-right: 1px;
             background: orange;
             height: 0;
             align-items: center;
@@ -75,11 +74,11 @@
             height: 0;
         }
 
-        span.deaths {
+        .deaths {
             background: #ff0000 !important;
         }
 
-        span.recovered {
+        .recovered {
             background: #0000FF !important;
         }
 
@@ -93,13 +92,7 @@
         </label></li>
 
 
-        <li><label for="confirmed">Confirmed
-            <input type="checkbox" checked="checked" disabled id="confirmed" name="confirmed"/>
-        </label><label for="deaths">Deaths
-            <input type="checkbox" id="deaths" name="deaths"/>
-        </label><label for="recovered">Recovered
-            <input type="checkbox" id="recovered" name="recovered"/>
-        </label></li>
+
 
         <li><label for="totals">Totals
             <input type="radio" id="totals" name="unit"/></label>
@@ -131,45 +124,74 @@
             this.chinput = document.querySelector('#change')
             this.ginput = document.querySelector('#growth')
 
-            const inputs = ["d", "r", "c", "t", "ch", "g"]
-            inputs.forEach(val => {
-                let input = this[`${val}input`]
-                let that = this
-                input.addEventListener('change', () => that.getValues())
-            })
+            const inputs = ["c","t", "ch", "g"].forEach(val =>
+                this[`${val}input`].addEventListener('change', () => this.init()))
+            const types = ["confirmed","deaths"].forEach(a => this.all[a] = [])
 
-            this.getValues()
+
+
+            this.init()
+
+
+
+
         }
-
-        async getValues() {
-            const files = [this.confirmed, this.deaths, this.recovered]
-            const types = ["confirmed","deaths","recovered"]
-
+        async init(){
             this.section.innerHTML = ""
-            files.forEach((a, b) => {
-                this.fetchValues(a, types[b])
-            })
+            const data = await this.getValues([this.deaths,this.confirmed])
+            this.showValues(data)
 
         }
 
-        async fetchValues(file, type) {
+        async getValues(data, newdata) {
+            newdata = newdata || []
+            if(data.length) {
+                const d = data.pop()
+                await this.fetchValues(d).then(async da =>{
+                    newdata.push(this.formatData(this.splitData(da)))
+                    return await this.getValues(data,newdata)
+                })
+            }
+            return await newdata
+        }
+
+
+
+
+        splitData(data) {
+            return data.split(/[\n\r|\r|\n\r|\n]/gi)
+        }
+
+         formatData(data) {
+            if(data) {
+                return data.map(line => {
+                    if (line) {
+                        line = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
+                        return (line[1].toLowerCase() === this.cinput.value.toLowerCase())
+                            ? [
+                                line[1],
+                                line[0],
+                                line.slice(4),
+                                line.slice(4).reduce((a,b,c,d)=>{
+                                    let e = parseInt(d[c+1])-parseInt(b)
+                                    e = isNaN(e) ? 0 : e
+                                    return e + parseInt(a)
+                                })
+                            ]
+                            : []
+                    }
+                }).filter(a=>(a && a.length))
+            }
+        }
+
+        fetchValues(file) {
             try {
-                console.log(file, type)
-                await fetch(file)
+                return fetch(file)
                     .then(response => {
                         if (!response.ok) throw Error(response.statusText)
                         return response.text()
                     })
-                    .then(async data => {
-                        this.all = {}
-                        this.all[type] = {}
 
-                        data.split(/[\n\r|\r|\n\r|\n]/gi).map(line => {
-                            const val = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
-                            if (val[1] === this.cinput.value) this.all[type][val[0]] = [val.slice(4), val[1]]
-                        })
-
-                    }).then(() => this.showValues());
             } catch (err) {
                 console.log({err})
                 return false
@@ -177,32 +199,60 @@
         }
 
 
-        async showValues() {
-            Object.values(this.all).forEach((val,ind)=>
-                Object.entries(val).map(([a, b]) => {
-                let div = document.createElement('div')
-                let span = document.createElement('span')
-                span.innerHTML = `${b[1]} - ${a}`
+        showValues(data) {
 
-                div.appendChild(span)
-                b[0].forEach((c, d, e) => {
-                    let bar = document.createElement('span')
-                    // let i = Math.abs(parseFloat(e[d + 1]) - parseFloat(c))/Math.abs(parseFloat(c) - parseFloat(e[d - 1]))
-                    // let i = parseFloat(c) - parseFloat(e[d - 1])
-                    let i = c
-                    // i = (!isNaN(i) && isFinite(i)) ? i : false
-                    // if (i) {
-                    bar.style.height = Math.log10(i) *10 + "px"
-                    // } else {
-                    //     bar.classList.add('empty')
-                    // }
 
-                    div.style.width = 210 + (3 * b.length) + "px";
-                    div.appendChild(bar)
 
+            const test = data[0].map((a,b)=> [a,data[data.length-1][b]])
+
+                Object.values(test).map((b,f) => {
+
+                    let div = document.createElement('div')
+                    let span = document.createElement('span')
+
+                    span.innerHTML = `${b[0][1]} - ${b[0][0]} <br> C:${b[0][3]} D:${data[1][f][3]}`
+                    div.appendChild(span)
+
+                    //    Day
+                    b[1][2].forEach((c, d, e) => {
+                        let bar = document.createElement('span')
+                        let bar2 = document.createElement('span')
+
+                        // let bar2 = document.createElement('span')
+                        // let i = Math.abs(parseFloat(e[d + 1]) - parseFloat(c))/Math.abs(parseFloat(c) - parseFloat(e[d - 1]))
+                        // let i = parseFloat(c) - parseFloat(e[d - 1])
+
+                        let i = b[0][2][d]
+                        let j = data[1][f][2][d]
+
+
+                        // console.log(`j: ${j}, k: ${k}`)
+                        // let j = c
+
+                        // i = (!isNaN(i) && isFinite(i)) ? i : false
+                        // if (i) {
+                        bar2.style.height = i/5 + "px"
+                        bar.style.height = j/5 + "px"
+
+                        // bar2.style.height = Math.log(j)*10 + "px"
+
+                        // } else {
+                        //     bar.classList.add('empty')
+                        // }
+                        bar.classList.add('deaths')
+
+                        // div.style.width = 210 + (3 * b.length) + "px";
+                        div.appendChild(bar)
+                        div.appendChild(bar2)
+                        // bar.append(bar2)
+
+                    })
+                    this.section.appendChild(div)
                 })
-                this.section.appendChild(div)
-            }))
+
+
+
+
         }
     }
 
