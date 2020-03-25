@@ -18,9 +18,10 @@
             justify-content: space-evenly;
             border: 1px solid #ddd;
             margin-bottom: 50px;
-            margin-right: 30px;
-            padding: 5px;
+            margin-right:2%;
+            padding: 40px 30px 10px;
             position: relative;
+            flex-wrap:wrap;
 
         }
 
@@ -31,6 +32,18 @@
             height: 0;
             align-items: center;
             justify-content: center;
+            transition: height 1s linear;
+            position:relative;
+
+        }
+        .topDog {
+            position:absolute;
+            top:-28px;
+            height:20px;
+            padding:1px 4px;
+            background:white;
+            border:2px solid orange;
+
 
         }
 
@@ -42,13 +55,10 @@
             display: flex;
         }
 
-
         span:first-child {
             position: absolute;
             bottom: -40px;
             left: 0;
-            background: gray;
-            color: white;
             width: 100%;
             height: 40px;
             text-align: center;
@@ -56,12 +66,37 @@
 
         main {
             display: flex;
-            padding: 5px;
+            width:100%;
+            margin-bottom:2vh;
 
         }
 
         select {
             margin: 5px;
+        }
+        ul {
+            list-style: none;
+            width:100%;
+            margin: 0 2vw;
+            padding:0;
+
+        }
+        li {
+            border-bottom:1px solid gray;
+            padding:10px 0;
+            display:flex;
+
+            justify-content: space-between;
+            text-align: center;
+
+
+
+        }
+        li label {
+
+            display: flex;
+            align-items: center;
+
         }
 
 
@@ -90,17 +125,24 @@
         <li><label for="Country">Country
             <input name="Country" id="country" value="Canada" type="text"/>
         </label></li>
-
-
+        <li><label for="scale">Scale
+            <input type="range" id="scale" name="scale" min="0.002" max="5" value="0.25" step="0.002"/></label>
+        </li>
 
 
         <li><label for="totals">Totals
-            <input type="radio" id="totals" name="unit"/></label>
+            <input type="radio" id="totals" name="unit" checked="checked"/></label>
             <label for="change">Change
                 <input type="radio" id="change" name="unit"/>
             </label><label for="growth">Growth Factor
                 <input type="radio" id="growth" name="unit"/>
             </label></li>
+        <li>
+            Total Confirmed for Country: <em id="countryConfirmed"></em></li>
+        <li>
+            Total Deaths for Country: <em id="countryDeaths"></em></li>
+        <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
+        <li>Total Population: <em id="countryTotal"></em></li>
 
     </ul>
 </main>
@@ -115,55 +157,62 @@
             this.confirmed = `confirmed.csv`
             this.deaths = `deaths.csv`
 
+            // https://www.worldometers.info/world-population/population-by-country/
+            // const t = {}
+            // Object.values(document.getElementById("example2").querySelectorAll('tbody tr')).map(a=>{
+            //     t[a.querySelector('td:nth-child(2)').innerText] =a.querySelector('td:nth-child(3)').innerText
+            // })
+            // JSON.stringify(t)
+            this.populations = {"China":"1,439,323,776","India":"1,380,004,385","United States":"331,002,651","Indonesia":"273,523,615","Pakistan":"220,892,340","Brazil":"212,559,417","Nigeria":"206,139,589","Bangladesh":"164,689,383","Russia":"145,934,462","Mexico":"128,932,753","Japan":"126,476,461","Ethiopia":"114,963,588","Philippines":"109,581,078","Egypt":"102,334,404","Vietnam":"97,338,579","DR Congo":"89,561,403","Turkey":"84,339,067","Iran":"83,992,949","Germany":"83,783,942","Thailand":"69,799,978","United Kingdom":"67,886,011","France":"65,273,511","Italy":"60,461,826","Tanzania":"59,734,218","South Africa":"59,308,690","Myanmar":"54,409,800","Kenya":"53,771,296","South Korea":"51,269,185","Colombia":"50,882,891","Spain":"46,754,778","Uganda":"45,741,007","Argentina":"45,195,774","Algeria":"43,851,044","Sudan":"43,849,260","Ukraine":"43,733,762","Iraq":"40,222,493","Afghanistan":"38,928,346","Poland":"37,846,611","Canada":"37,742,154","Morocco":"36,910,560","Saudi Arabia":"34,813,871","Uzbekistan":"33,469,203","Peru":"32,971,854","Angola":"32,866,272","Malaysia":"32,365,999","Mozambique":"31,255,435","Ghana":"31,072,940","Yemen":"29,825,964","Nepal":"29,136,808","Venezuela":"28,435,940","Madagascar":"27,691,018","Cameroon":"26,545,863","Côte d'Ivoire":"26,378,274","North Korea":"25,778,816","Australia":"25,499,884","Niger":"24,206,644","Taiwan":"23,816,775","Sri Lanka":"21,413,249","Burkina Faso":"20,903,273","Mali":"20,250,833","Romania":"19,237,691","Malawi":"19,129,952","Chile":"19,116,201","Kazakhstan":"18,776,707","Zambia":"18,383,955","Guatemala":"17,915,568","Ecuador":"17,643,054","Syria":"17,500,658","Netherlands":"17,134,872","Senegal":"16,743,927","Cambodia":"16,718,965","Chad":"16,425,864","Somalia":"15,893,222","Zimbabwe":"14,862,924","Guinea":"13,132,795","Rwanda":"12,952,218","Benin":"12,123,200","Burundi":"11,890,784","Tunisia":"11,818,619","Bolivia":"11,673,021","Belgium":"11,589,623","Haiti":"11,402,528","Cuba":"11,326,616","South Sudan":"11,193,725","Dominican Republic":"10,847,910","Czech Republic (Czechia)":"10,708,981","Greece":"10,423,054","Jordan":"10,203,134","Portugal":"10,196,709","Azerbaijan":"10,139,177","Sweden":"10,099,265","Honduras":"9,904,607","United Arab Emirates":"9,890,402","Hungary":"9,660,351","Tajikistan":"9,537,645","Belarus":"9,449,323","Austria":"9,006,398","Papua New Guinea":"8,947,024","Serbia":"8,737,371","Israel":"8,655,535","Switzerland":"8,654,622","Togo":"8,278,724","Sierra Leone":"7,976,983","Hong Kong":"7,496,981","Laos":"7,275,560","Paraguay":"7,132,538","Bulgaria":"6,948,445","Libya":"6,871,292","Lebanon":"6,825,445","Nicaragua":"6,624,554","Kyrgyzstan":"6,524,195","El Salvador":"6,486,205","Turkmenistan":"6,031,200","Singapore":"5,850,342","Denmark":"5,792,202","Finland":"5,540,720","Congo":"5,518,087","Slovakia":"5,459,642","Norway":"5,421,241","Oman":"5,106,626","State of Palestine":"5,101,414","Costa Rica":"5,094,118","Liberia":"5,057,681","Ireland":"4,937,786","Central African Republic":"4,829,767","New Zealand":"4,822,233","Mauritania":"4,649,658","Panama":"4,314,767","Kuwait":"4,270,571","Croatia":"4,105,267","Moldova":"4,033,963","Georgia":"3,989,167","Eritrea":"3,546,421","Uruguay":"3,473,730","Bosnia and Herzegovina":"3,280,819","Mongolia":"3,278,290","Armenia":"2,963,243","Jamaica":"2,961,167","Qatar":"2,881,053","Albania":"2,877,797","Puerto Rico":"2,860,853","Lithuania":"2,722,289","Namibia":"2,540,905","Gambia":"2,416,668","Botswana":"2,351,627","Gabon":"2,225,734","Lesotho":"2,142,249","North Macedonia":"2,083,374","Slovenia":"2,078,938","Guinea-Bissau":"1,968,001","Latvia":"1,886,198","Bahrain":"1,701,575","Equatorial Guinea":"1,402,985","Trinidad and Tobago":"1,399,488","Estonia":"1,326,535","Timor-Leste":"1,318,445","Mauritius":"1,271,768","Cyprus":"1,207,359","Eswatini":"1,160,164","Djibouti":"988,000","Fiji":"896,445","Réunion":"895,312","Comoros":"869,601","Guyana":"786,552","Bhutan":"771,608","Solomon Islands":"686,884","Macao":"649,335","Montenegro":"628,066","Luxembourg":"625,978","Western Sahara":"597,339","Suriname":"586,632","Cabo Verde":"555,987","Maldives":"540,544","Malta":"441,543","Brunei":"437,479","Guadeloupe":"400,124","Belize":"397,628","Bahamas":"393,244","Martinique":"375,265","Iceland":"341,243","Vanuatu":"307,145","French Guiana":"298,682","Barbados":"287,375","New Caledonia":"285,498","French Polynesia":"280,908","Mayotte":"272,815","Sao Tome & Principe":"219,159","Samoa":"198,414","Saint Lucia":"183,627","Channel Islands":"173,863","Guam":"168,775","Curaçao":"164,093","Kiribati":"119,449","Micronesia":"115,023","Grenada":"112,523","St. Vincent & Grenadines":"110,940","Aruba":"106,766","Tonga":"105,695","U.S. Virgin Islands":"104,425","Seychelles":"98,347","Antigua and Barbuda":"97,929","Isle of Man":"85,033","Andorra":"77,265","Dominica":"71,986","Cayman Islands":"65,722","Bermuda":"62,278","Marshall Islands":"59,190","Northern Mariana Islands":"57,559","Greenland":"56,770","American Samoa":"55,191","Saint Kitts & Nevis":"53,199","Faeroe Islands":"48,863","Sint Maarten":"42,876","Monaco":"39,242","Turks and Caicos":"38,717","Saint Martin":"38,666","Liechtenstein":"38,128","San Marino":"33,931","Gibraltar":"33,691","British Virgin Islands":"30,231","Caribbean Netherlands":"26,223","Palau":"18,094","Cook Islands":"17,564","Anguilla":"15,003","Tuvalu":"11,792","Wallis & Futuna":"11,239","Nauru":"10,824","Saint Barthelemy":"9,877","Saint Helena":"6,077","Saint Pierre & Miquelon":"5,794","Montserrat":"4,992","Falkland Islands":"3,480","Niue":"1,626","Tokelau":"1,357","Holy See":"801"}
+            this.cTotal = document.getElementById("countryConfirmed")
+            this.dTotal = document.getElementById("countryDeaths")
+            this.rTotal = document.getElementById("countryRatio")
+            this.pTotal = document.getElementById("countryTotal")
+
+
 
             this.dinput = document.querySelector('#deaths')
             this.rinput = document.querySelector('#recovered')
             this.cinput = document.querySelector('#country')
 
+            this.sinput = document.querySelector('#scale')
             this.tinput = document.querySelector('#totals')
             this.chinput = document.querySelector('#change')
             this.ginput = document.querySelector('#growth')
 
-            const inputs = ["c","t", "ch", "g"].forEach(val =>
+            const inputs = ["s", "c", "t", "ch", "g"].forEach(val =>
                 this[`${val}input`].addEventListener('change', () => this.init()))
-            const types = ["confirmed","deaths"].forEach(a => this.all[a] = [])
-
-
+            const types = ["confirmed", "deaths"].forEach(a => this.all[a] = [])
 
             this.init()
-
-
-
-
         }
-        async init(){
+
+        async init() {
             this.section.innerHTML = ""
-            const data = await this.getValues([this.deaths,this.confirmed])
+            const data = await this.getValues([this.deaths, this.confirmed])
             this.showValues(data)
 
         }
 
         async getValues(data, newdata) {
             newdata = newdata || []
-            if(data.length) {
+            if (data.length) {
                 const d = data.pop()
-                await this.fetchValues(d).then(async da =>{
+                await this.fetchValues(d).then(async da => {
                     newdata.push(this.formatData(this.splitData(da)))
-                    return await this.getValues(data,newdata)
+                    return await this.getValues(data, newdata)
                 })
             }
             return await newdata
         }
 
 
-
-
         splitData(data) {
             return data.split(/[\n\r|\r|\n\r|\n]/gi)
         }
 
-         formatData(data) {
-            if(data) {
+        formatData(data) {
+            if (data) {
                 return data.map(line => {
                     if (line) {
                         line = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
@@ -172,15 +221,15 @@
                                 line[1],
                                 line[0],
                                 line.slice(4),
-                                line.slice(4).reduce((a,b,c,d)=>{
-                                    let e = parseInt(d[c+1])-parseInt(b)
+                                line.slice(4).reduce((a, b, c, d) => {
+                                    let e = parseInt(d[c + 1]) - parseInt(b)
                                     e = isNaN(e) ? 0 : e
                                     return e + parseInt(a)
                                 })
                             ]
                             : []
                     }
-                }).filter(a=>(a && a.length))
+                }).filter(a => (a && a.length))
             }
         }
 
@@ -200,60 +249,81 @@
 
 
         showValues(data) {
+            let totalC = 0
+            let totalD = 0
+
+            const test = data[0].map((a, b) => [a, data[data.length - 1][b]])
+            Object.values(test).map((b, f) => {
+                let maxC = {cell: false, total:0}
+
+                let div = document.createElement('div')
+                let span = document.createElement('span')
+                span.innerHTML = `${b[0][1]} - ${b[0][0]} <br> C:${b[0][3]} D:${data[1][f][3]}`
+
+                totalD += parseInt(data[1][f][3])
+                totalC += parseInt(b[0][3])
+
+                div.appendChild(span)
+                this.section.appendChild(div)
+
+                b[1][2].forEach((c, d, e) => {
+                    let bar = document.createElement('span')
+                    let bar2 = document.createElement('span')
+
+                    let i = b[0][2][d]
+                    let j = data[1][f][2][d]
 
 
 
-            const test = data[0].map((a,b)=> [a,data[data.length-1][b]])
+                    let gri = Math.abs(parseFloat(b[0][2][d + 1]) - parseFloat(i))/Math.abs(parseFloat(i) - parseFloat(b[0][2][d - 1]))
+                    gri = (!isNaN(gri) && isFinite(gri)) ? gri : false
 
-                Object.values(test).map((b,f) => {
+                    let grj = Math.abs(parseFloat(data[1][f][2][d + 1]) - parseFloat(j))/Math.abs(parseFloat(j) - parseFloat(data[1][f][2][d - 1]))
+                    grj = (!isNaN(grj) && isFinite(grj)) ? grj : false
 
-                    let div = document.createElement('div')
-                    let span = document.createElement('span')
+                    let ci = Math.abs(parseFloat(b[0][2][d + 1]) - parseFloat(i))
+                    let gi = Math.abs(parseFloat(data[1][f][2][d + 1]) - parseFloat(j))
 
-                    span.innerHTML = `${b[0][1]} - ${b[0][0]} <br> C:${b[0][3]} D:${data[1][f][3]}`
-                    div.appendChild(span)
+                    bar.classList.add('deaths')
 
-                    //    Day
-                    b[1][2].forEach((c, d, e) => {
-                        let bar = document.createElement('span')
-                        let bar2 = document.createElement('span')
+                    bar2.style.height = "0"
+                    bar.style.height = "0"
 
-                        // let bar2 = document.createElement('span')
-                        // let i = Math.abs(parseFloat(e[d + 1]) - parseFloat(c))/Math.abs(parseFloat(c) - parseFloat(e[d - 1]))
-                        // let i = parseFloat(c) - parseFloat(e[d - 1])
+                    div.appendChild(bar)
+                    div.appendChild(bar2)
 
-                        let i = b[0][2][d]
-                        let j = data[1][f][2][d]
-                        console.log(i,j)
+                    if(this.chinput.checked){
+                        i = ci
+                        j = gi
+                    }
+                    if(this.ginput.checked){
+                        i = gri
+                        j = grj
+                    }
+
+                    maxC =  (i > maxC.total) ? {cell: bar2, total:parseInt(i)} : maxC
 
 
-                        // console.log(`j: ${j}, k: ${k}`)
-                        // let j = c
+                    setTimeout(()=>{
+                        bar2.style.height = i * parseFloat(this.sinput.value) + "px"
+                        bar.style.height = j * parseFloat(this.sinput.value) + "px"
+                    },1000)
 
-                        // i = (!isNaN(i) && isFinite(i)) ? i : false
-                        // if (i) {
-                        bar2.style.height = i/5 + "px"
-                        bar.style.height = j/5 + "px"
-
-                        // bar2.style.height = Math.log(j)*10 + "px"
-
-                        // } else {
-                        //     bar.classList.add('empty')
-                        // }
-                        bar.classList.add('deaths')
-
-                        // div.style.width = 210 + (3 * b.length) + "px";
-                        div.appendChild(bar)
-                        div.appendChild(bar2)
-                        // bar.append(bar2)
-
-                    })
-                    this.section.appendChild(div)
                 })
+                let label = document.createElement('em')
+                label.innerText = maxC.total
+                label.classList.add("topDog")
+                if(maxC.cell) maxC.cell.append(label)
+
+                const populationName = this.populations[b[0][0]]
+                const population = parseInt(populationName.replace(/,/gi,''))
+                this.cTotal.innerText = `${totalC} | %${(totalC/population).toFixed(4)}`
+                this.dTotal.innerText = `${totalD} | %${(totalD/population).toFixed(4)}`
+                this.rTotal.innerText = `${(totalD/totalC).toFixed(2)}`
+                this.pTotal.innerText = `${populationName}`
 
 
-
-
+            })
         }
     }
 
