@@ -184,7 +184,7 @@
             this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
             // this.confirmed = {confirmed:`confirmed.csv`}
             this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
-            this.deaths = {deaths:`deaths.csv`}
+            // this.deaths = {deaths:`deaths.csv`}
             this.confirmedData = localStorage.getItem('confirmed')
             this.deathsData = localStorage.getItem('deaths')
             this.newTime = localStorage.getItem('newTime')
@@ -465,7 +465,6 @@
         async init() {
             this.section.innerHTML = ""
             const data = await this.getValues([this.deaths, this.confirmed])
-            console.log([this.confirmedData,this.deathsData])
             this.buildDivs(data)
         }
 
