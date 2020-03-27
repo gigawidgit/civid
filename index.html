@@ -612,7 +612,7 @@
 
         async syncData (file) {
             const obj = Object.entries(file)
-            if (!this.confirmedData || this.deathsData  || Math.abs(this.currentTime.getTime()-parseInt(this.lastTime)) > 86400000 ) {
+            if (!this.confirmedData || !this.deathsData || Math.abs(this.currentTime.getTime()-parseInt(this.lastTime)) > 86400000 ) {
                 try {
                     fetch(obj[0][1].toString(), {mode: "cors"})
                         .then(async da => {
