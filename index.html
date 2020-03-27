@@ -188,10 +188,8 @@
             this.newTime = localStorage.getItem('newTime')
             this.currentTime = new Date()
 
-            this.confirmedData = (this.confirmedData) ? JSON.parse(this.confirmedData) : {}
-            this.deathsData = (this.deathsData) ? JSON.parse(this.deathsData) : {}
-
-
+            this.confirmedData = (this.confirmedData) ? JSON.parse(this.confirmedData) : false
+            this.deathsData = (this.deathsData) ? JSON.parse(this.deathsData) : false
 
             this.lastTime = (this.newTime) ? this.newTime : new Date()
 
@@ -465,6 +463,7 @@
         async init() {
             this.section.innerHTML = ""
             const data = await this.getValues([this.deaths, this.confirmed])
+            console.log([this.confirmedData,this.deathsData])
             this.buildDivs(data)
         }
 
@@ -520,7 +519,7 @@
 
             let totalC = 0
             let totalD = 0
-            console.log(data)
+
             const test = data[0].map((a, b) => [a, data[data.length - 1][b]])
             Object.values(test).map((b, f) => {
                 let maxC = {cell: false, total: 0}
