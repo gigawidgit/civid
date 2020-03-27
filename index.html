@@ -181,8 +181,10 @@
         constructor() {
             this.all = {}
             this.section = document.querySelector('section')
-            this.confirmed = `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`
-            this.deaths = `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`
+            this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
+            // this.confirmed = {confirmed:`confirmed.csv`}
+            this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
+            this.deaths = {deaths:`deaths.csv`}
             this.confirmedData = localStorage.getItem('confirmed')
             this.deathsData = localStorage.getItem('deaths')
             this.newTime = localStorage.getItem('newTime')
@@ -610,16 +612,16 @@
         }
 
         async syncData (file) {
-
+            const obj = Object.entries(file)
             if (!this.confirmedData || this.deathsData  || Math.abs(this.currentTime.getTime()-parseInt(this.lastTime)) > 86400000 ) {
                 try {
-                    fetch(file, {mode: "cors"})
+                    fetch(obj[0][1].toString(), {mode: "cors"})
                         .then(async da => {
                             const data = await da.text();
                             if (data) {
                                 console.log("remote")
                                 localStorage.setItem('newTime', this.currentTime.getTime().toString())
-                                localStorage.setItem(file.slice(0,-4), JSON.stringify(this.formatData(this.splitData(data))))
+                                localStorage.setItem(obj[0][0], JSON.stringify(this.formatData(this.splitData(data))))
                             }
                         })
                 } catch (err) {
