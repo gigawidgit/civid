@@ -146,8 +146,10 @@
 <body>
 <main>
     <ul>
-        <li><label for="Country">Country
-            <input name="Country" id="country" value="Canada" type="text"/>
+        <li><label for="country">Country
+            <select name="country" id="country">
+
+            </select>
         </label></li>
         <li><label for="scale">Scale
             <input type="range" id="scale" name="scale" min="0.002" max="10" value="0.25" step="0.002"/></label>
@@ -168,7 +170,7 @@
         <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
         <li>Total Population: <em id="countryTotal"></em></li>
         <li>
-            <button id="resetButton">Refresh Data</button>
+            <label for="resetButton">Data Last Fetched: <strong id="dataLastFetched"></strong><button id="resetButton">Refresh Data</button> </label>
         </li>
 
     </ul>
@@ -181,14 +183,15 @@
         constructor() {
             this.all = {}
             this.section = document.querySelector('section')
-            // this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
-            this.confirmed = {confirmed:`confirmed.csv`}
-            // this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
-            this.deaths = {deaths:`deaths.csv`}
+            this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
+            // this.confirmed = {confirmed:`confirmed.csv`}
+            this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
+            // this.deaths = {deaths:`deaths.csv`}
             this.confirmedData = localStorage.getItem('confirmed')
             this.deathsData = localStorage.getItem('deaths')
             this.newTime = localStorage.getItem('newTime')
             this.currentTime = new Date()
+            this.allCountries = []
 
             this.confirmedData = (this.confirmedData) ? JSON.parse(this.confirmedData) : false
             this.deathsData = (this.deathsData) ? JSON.parse(this.deathsData) : false
@@ -452,17 +455,21 @@
             this.tinput = document.querySelector('#totals')
             this.chinput = document.querySelector('#change')
             this.ginput = document.querySelector('#growth')
-
             const inputs = ["s", "c", "t", "ch", "g"].forEach(val =>
-                this[`${val}input`].addEventListener('change', () => this.init()))
+                this[`${val}input`].addEventListener('change', () => this.buildDivs()))
             const types = ["confirmed", "deaths"].forEach(a => this.all[a] = [])
-
             this.init()
         }
 
         async init() {
             this.section.innerHTML = ""
-            await this.buildDivs()
+            await this.buildDivs().then(a=>{
+                const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
+                document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
+                this.cinput.selectedIndex = this.allCountries.indexOf('Canada')
+                this.cinput.dispatchEvent(new Event('change'))
+            })
+
         }
 
         async getValues(data, newdata) {
@@ -472,7 +479,6 @@
                 const nd = await this.syncData(d)
                 newdata.push(nd)
                 return await this.getValues(data,newdata)
-
             }
             return newdata
         }
@@ -482,9 +488,10 @@
         }
         formatData(data) {
             if (data) {
-                return data.map(line => {
+                return data.map((line, ind) => {
                     if (line) {
                         line = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
+                        if(ind && !this.allCountries.includes(line[1])) this.allCountries.push(line[1])
                         return (line[1].toLowerCase() === this.cinput.value.toLowerCase())
                             ? [
                                 line[1],
@@ -504,6 +511,10 @@
 
         async buildDivs() {
             await this.getValues([this.deaths, this.confirmed]).then(data=>{
+
+
+
+
                 let totalC = 0
                 let totalD = 0
                 const test = data[0].map((a, b) => [a, data[data.length - 1][b]])
@@ -537,8 +548,21 @@
 
 
                 })
+
+
+            })
+            this.buildSelectOptions()
+
+        }
+        buildSelectOptions() {
+            this.allCountries.forEach(a=>{
+                const opt = document.createElement('option')
+                opt.value = a.toLowerCase().toString()
+                opt.innerText = a.toString()
+                this.cinput.append(opt)
             })
         }
+
         async loopDailyData(b, data, f, div, maxC) {
             b[1][2].forEach((c, d, e) => {
                 let bar = document.createElement('span')
@@ -625,12 +649,13 @@
                     return this.formatData(JSON.parse(localStorage.getItem('deaths')))
                 }
             }
+
             return this.formatData(JSON.parse(localStorage.getItem(obj[0][0])))
 
         }
     }
 
-    // TODO: create country options as select
+
     // TODO: check if local or remote
     // TODO: reposition weekend lines
     // TODO: add quantity lines
