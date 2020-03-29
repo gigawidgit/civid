@@ -168,7 +168,7 @@
         <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
         <li>Total Population: <em id="countryTotal"></em></li>
         <li>
-            <button id="resetButton"> Reset</button>
+            <button id="resetButton">Refresh Data</button>
         </li>
 
     </ul>
@@ -181,10 +181,10 @@
         constructor() {
             this.all = {}
             this.section = document.querySelector('section')
-            this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
-            // this.confirmed = {confirmed:`confirmed.csv`}
-            this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
-            // this.deaths = {deaths:`deaths.csv`}
+            // this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
+            this.confirmed = {confirmed:`confirmed.csv`}
+            // this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
+            this.deaths = {deaths:`deaths.csv`}
             this.confirmedData = localStorage.getItem('confirmed')
             this.deathsData = localStorage.getItem('deaths')
             this.newTime = localStorage.getItem('newTime')
@@ -460,22 +460,21 @@
             this.init()
         }
 
-
-
         async init() {
             this.section.innerHTML = ""
-            const data = await this.getValues([this.deaths, this.confirmed])
-            this.buildDivs(data)
+            await this.buildDivs()
         }
 
         async getValues(data, newdata) {
             newdata = newdata || []
             if (data.length) {
                 const d = data.pop()
-                await this.syncData(d)
-                return this.getValues(data,newdata)
+                const nd = await this.syncData(d)
+                newdata.push(nd)
+                return await this.getValues(data,newdata)
+
             }
-            return await newdata
+            return newdata
         }
 
         splitData(data) {
@@ -502,54 +501,42 @@
                 }).filter(a => (a && a.length))
             }
         }
-        fetchValues(file) {
-            try {
-                return fetch(file)
-                    .then(response => {
-                        if (!response.ok) throw Error(response.statusText)
-                        return response.text()
-                    })
 
-            } catch (err) {
-                console.log({err})
-                return false
-            }
-        }
-        buildDivs() {
-            const data = [this.confirmedData,this.deathsData]
+        async buildDivs() {
+            await this.getValues([this.deaths, this.confirmed]).then(data=>{
+                let totalC = 0
+                let totalD = 0
+                const test = data[0].map((a, b) => [a, data[data.length - 1][b]])
+                Object.values(test).map((b, f) => {
+                    let maxC = {cell: false, total: 0}
+                    let div = document.createElement('div')
+                    let span = document.createElement('span')
 
-            let totalC = 0
-            let totalD = 0
+                    span.innerHTML = `<p>${b[0][1]} - ${b[0][0]} <br> Confirmed:<strong>${b[0][3]}</strong> | Deaths:<strong>${data[1][f][3]}</strong></p>`
 
-            const test = data[0].map((a, b) => [a, data[data.length - 1][b]])
-            Object.values(test).map((b, f) => {
-                let maxC = {cell: false, total: 0}
-                let div = document.createElement('div')
-                let span = document.createElement('span')
+                    totalD += parseInt(data[1][f][3])
+                    totalC += parseInt(b[0][3])
 
-                span.innerHTML = `<p>${b[0][1]} - ${b[0][0]} <br> Confirmed:<strong>${b[0][3]}</strong> | Deaths:<strong>${data[1][f][3]}</strong></p>`
+                    div.appendChild(span)
+                    this.section.appendChild(div)
 
-                totalD += parseInt(data[1][f][3])
-                totalC += parseInt(b[0][3])
+                    let label = document.createElement('em')
+                    label.innerText = maxC.total
+                    label.classList.add("topDog")
+                    if (maxC.cell) maxC.cell.append(label)
 
-                div.appendChild(span)
-                this.section.appendChild(div)
+                    this.loopDailyData(b, data, f, div, maxC)
 
-                let label = document.createElement('em')
-                label.innerText = maxC.total
-                label.classList.add("topDog")
-                if (maxC.cell) maxC.cell.append(label)
+                    const populationName = this.populations[b[0][0]]
+                    const population = parseInt(populationName.replace(/,/gi, ''))
 
-                this.loopDailyData(b, data, f, div, maxC)
+                    this.cTotal.innerText = `${totalC} | %${(totalC / population).toFixed(4)}`
+                    this.dTotal.innerText = `${totalD} | %${(totalD / population).toFixed(4)}`
+                    this.rTotal.innerText = `${(totalD / totalC).toFixed(2)}%`
+                    this.pTotal.innerText = `${populationName}`
 
-                const populationName = this.populations[b[0][0]]
-                const population = parseInt(populationName.replace(/,/gi, ''))
 
-                this.cTotal.innerText = `${totalC} | %${(totalC / population).toFixed(4)}`
-                this.dTotal.innerText = `${totalD} | %${(totalD / population).toFixed(4)}`
-                this.rTotal.innerText = `${(totalD / totalC).toFixed(2)}`
-                this.pTotal.innerText = `${populationName}`
-
+                })
             })
         }
         async loopDailyData(b, data, f, div, maxC) {
@@ -618,21 +605,36 @@
                         .then(async da => {
                             const data = await da.text();
                             if (data) {
-                                console.log("remote")
                                 localStorage.setItem('newTime', this.currentTime.getTime().toString())
-                                localStorage.setItem(obj[0][0], JSON.stringify(this.formatData(this.splitData(data))))
+                                localStorage.setItem(obj[0][0], JSON.stringify(this.splitData(data)))
                             }
+
                         })
-                } catch (err) {
+
+                }
+                catch (err) {
                     console.log(err)
                     localStorage.removeItem('confirmed')
                     localStorage.removeItem('newTime')
                 }
             } else {
-                console.log("local")
+                if(obj[0][0].toString() === 'confirmed') {
+                    return this.formatData(JSON.parse(localStorage.getItem('confirmed')))
+                }
+                if(obj[0][0].toString() === 'deaths') {
+                    return this.formatData(JSON.parse(localStorage.getItem('deaths')))
+                }
             }
+            return this.formatData(JSON.parse(localStorage.getItem(obj[0][0])))
+
         }
     }
+    // TODO: create country options as select
+    // TODO: check if local or remote
+    // TODO: reposition weekend lines
+    // TODO: add quantity lines
+    // TODO: update to save data before country is filtered
+    // TODO: Cleanup code
 
     const graph = new Graph()
 
