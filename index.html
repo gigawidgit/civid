@@ -462,7 +462,7 @@
         }
 
         async init() {
-            this.section.innerHTML = ""
+
             await this.buildDivs().then(a=>{
                 const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
                 document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
@@ -510,6 +510,7 @@
         }
 
         async buildDivs() {
+            this.section.innerHTML = ""
             await this.getValues([this.deaths, this.confirmed]).then(data=>{
 
 
