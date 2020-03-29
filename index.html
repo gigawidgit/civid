@@ -466,6 +466,7 @@
             await this.buildDivs().then(a=>{
                 const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
                 document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
+                this.allCountries = this.allCountries.sort()
                 this.cinput.selectedIndex = this.allCountries.indexOf('Canada')
                 this.cinput.dispatchEvent(new Event('change'))
             })
