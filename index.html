@@ -510,7 +510,7 @@
 
                 })
 
-                const populationName = this.populations[this.cinput.options[this.cinput.selectedIndex].value]
+                const populationName = this.populations[this.cinput.value]
                 const population = parseInt(populationName.replace(/,/gi, ''))
                 this.cTotal.innerText = `${co.total} | %${(co.total / population).toFixed(4)}`
                 this.dTotal.innerText = `${de.total} | %${(de.total / population).toFixed(4)}`
