@@ -88,9 +88,8 @@
 
         main {
             display: flex;
-            width: 100%;
-            margin-bottom: 2vh;
-
+            width: calc(100% - 4vmin);
+            margin: 2vmin 2vmin 4vmin;
         }
 
         select {
@@ -99,33 +98,36 @@
 
         ul {
             list-style: none;
-            width: 100%;
-            margin: 0 2vw;
-            padding: 0;
+            width: calc(100% - 6vmin);
+            margin: 0 1vw;
+            padding: 3vmin;
+            box-shadow: -5px 5px 10px rgba(0,0,0,0.1);
+            border:1px solid #ddd;
 
         }
 
         li {
-            border-bottom: 1px solid gray;
-            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
             display: flex;
-
             justify-content: space-between;
             text-align: center;
 
 
         }
-
-        li label {
-
-            display: flex;
-            align-items: center;
-
+        li:last-child {
+            border:none;
         }
 
+        li label {
+            display: flex;
+            align-items: center;
+            width:100%;
+            justify-content: space-between;
+        }
 
         input {
-            padding: 5px;
+            width:100%;
         }
 
         span.empty {
@@ -139,6 +141,9 @@
 
         .recovered {
             background: #0000FF !important;
+        }
+        select {
+            padding:1rem;
         }
 
     </style>
@@ -169,11 +174,8 @@
             Total Deaths for Country: <em id="countryDeaths"></em></li>
         <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
         <li>Total Population: <em id="countryTotal"></em></li>
-        <li>
-            <label for="resetButton">Data Last Fetched: <strong id="dataLastFetched"></strong>
-                <button id="resetButton">Refresh Data</button>
-            </label>
-        </li>
+        <li>Data From: <strong id="dataLastFetched"></strong>     <button id="resetButton">Refresh Data</button></li>
+
 
     </ul>
 </main>
@@ -464,25 +466,28 @@
         }
 
         async init() {
+            this.resetData()
             await this.buildDivs()
         }
 
         async getValues(data) {
-
             if (data.length) {
-
-
                 return this.syncData(data.pop()).then(async () => await this.getValues(data))
             }
         }
 
         async buildDivs() {
-            this.resetData()
-            const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
-            document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
             this.section.innerHTML = ""
             const status = `${(location.host.split(":")[0] === "localhost") ? "off" : "on"}line`
             const that = this
+            if (this.ginput.checked) {
+                this.sinput.max = 20
+                this.sinput.min = 1
+            }else {
+                this.sinput.max = 3
+                this.sinput.min = 0.1
+                this.sinput.val = 1
+            }
 
 
             await this.getValues(Object.entries(this.files[status])).then(() => {
@@ -527,7 +532,8 @@
 
             })
 
-
+            const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
+            document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
         }
 
         async calculateValues(c, d, div) {
@@ -548,8 +554,8 @@
 
 
                 setTimeout(() => {
-                    cSpan.style.height = parseInt(confirm) * parseFloat(this.sinput.value) + "px"
-                    dSpan.style.height = parseInt(death) * parseFloat(this.sinput.value) + "px"
+                    cSpan.style.height = parseFloat(confirm) * parseFloat(this.sinput.value) + "px"
+                    dSpan.style.height = parseFloat(death) * parseFloat(this.sinput.value) + "px"
                 }, 1000)
 
                 return this.calculateValues(c, d, div)
@@ -612,8 +618,10 @@
                             })
                             dt.changes = dt.data.map((a,b,c)=> c[b - 1] ? Math.abs(a - c[b - 1]) : 0)
                             dt.growth = dt.changes.map((a,b,c)=>{
-                                    let calc = (c[b - 1] && c[b + 1]) ? Math.abs(parseInt(c[b + 1]) - parseInt(a)) / Math.abs(parseInt(a) - parseInt(c[b - 1])) : 0
-                                    return (!isNaN(calc) && isFinite(calc)) ? calc : 0
+                                    let calc = (c[b - 1] && c[b + 1])
+                                            ? Math.abs(c[b + 1] - a) / Math.abs(a - c[b - 1])
+                                            : 0
+                                    return (!isNaN(calc) && isFinite(calc)) ? parseFloat(calc) : 0
                             })
                         }
                         return dt
