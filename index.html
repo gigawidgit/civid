@@ -185,7 +185,7 @@
             this.section = document.querySelector('section')
             this.files = {
                 online: {
-                    confirmed: `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`,
+                        confirmed: `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`,
                     deaths: `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`
                 },
                 offline: {
@@ -204,7 +204,8 @@
             this.currentCountry = {}
 
             for (let x in this.files.data) {
-                this.files.data[x] = (localStorage.getItem(x)) ? JSON.parse(localStorage.getItem(x)) : false
+                this.files.data[x] = (localStorage.getItem(x)) ? JSON.parse(localStorage.getItem(x)) : []
+
             }
 
             this.lastTime = (this.newTime) ? this.newTime : new Date()
@@ -463,25 +464,28 @@
         }
 
         async init() {
-            this.resetData()
-            const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
-            document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
             await this.buildDivs()
         }
 
         async getValues(data) {
+
             if (data.length) {
+
+
                 return this.syncData(data.pop()).then(async () => await this.getValues(data))
             }
         }
 
         async buildDivs() {
+            this.resetData()
+            const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
+            document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
             this.section.innerHTML = ""
             const status = `${(location.host.split(":")[0] === "localhost") ? "off" : "on"}line`
             const that = this
 
 
-            await this.getValues(Object.values(this.files[status])).then(() => {
+            await this.getValues(Object.entries(this.files[status])).then(() => {
                 Object.entries(this.files.data).map(([key, val], i) => {
                     this.currentCountry[key] = {}
                     this.currentCountry[key].data = that.formatData(val)
@@ -556,17 +560,18 @@
         }
 
         async syncData(file) {
-            const name = file.slice(0, -4)
+
+            const name = file[0]
 
             if(!this.files.data[name] || !this.files.data[name].length){
                 console.log('fetch')
             try {
-                return await fetch(file.toString(), {mode: "cors"})
+                return await fetch(file[1].toString(), {mode: "cors"})
                     .then(async da => {
                         const data = await da.text();
                         if (data) {
                             localStorage.setItem('newTime', this.currentTime.getTime().toString())
-                            localStorage.setItem(name, JSON.stringify(this.splitData(data)))
+                            localStorage.setItem(name, JSON.stringify(this.splitData(data.slice(1))))
                             this.files.data[name] = this.splitData(data).filter(a => a.length)
 
                         }
@@ -576,7 +581,9 @@
             } catch (err) {
                 console.log(err)
                 localStorage.clear()
-            }} else {
+            }
+            // return this.files.data[name]
+            } else {
                 console.log('retrieve')
                 return this.files.data[name]}
         }
