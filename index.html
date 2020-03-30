@@ -471,7 +471,7 @@
 
         async getValues(data) {
             if (data.length) {
-                await this.syncData(data.pop()).then(async () => await this.getValues(data))
+                return this.syncData(data.pop()).then(async () => await this.getValues(data))
             }
         }
 
@@ -480,22 +480,25 @@
             const status = `${(location.host.split(":")[0] === "localhost") ? "off" : "on"}line`
             const that = this
 
-            await this.getValues(Object.values(this.files[status])).then(() => {
-                Object.entries(this.files.data).map(([key, val]) => {
-                    this.currentCountry[key] = {changes: [], growth: [], country: ''}
-                    this.currentCountry[key].data = that.formatData(val)
-                    this.currentCountry.country = this.currentCountry[key].data[0].country
-                    Object.values(this.currentCountry[key].data).forEach((num, ind, all) => {
-                        this.currentCountry[key].total = all.reduce((a, b) => parseInt(a || 0) + parseInt(b.total))
-                    })
-                })
 
-                this.buildSelectOptions()
+            await this.getValues(Object.values(this.files[status])).then(() => {
+                Object.entries(this.files.data).map(([key, val], i) => {
+                    this.currentCountry[key] = {}
+                    this.currentCountry[key].data = that.formatData(val)
+                    this.buildSelectOptions()
+                    let total = 0
+                    Object.values(this.currentCountry[key].data).forEach((num, ind, all) => {
+                        if(!i && !ind) this.currentCountry.country = num.country
+                        total += num.total
+                    })
+                    this.currentCountry[key].total = total
+                })
 
                 let co = this.currentCountry.confirmed
                 let de = this.currentCountry.deaths
 
                 this.currentCountry.confirmed.data.forEach((a, b, c) => {
+
                     let div = document.createElement('div')
                     let span = document.createElement('span')
 
@@ -510,8 +513,9 @@
 
                 })
 
-                const populationName = this.populations[this.cinput.value]
+                const populationName = this.populations[this.currentCountry.country]
                 const population = parseInt(populationName.replace(/,/gi, ''))
+
                 this.cTotal.innerText = `${co.total} | %${(co.total / population).toFixed(4)}`
                 this.dTotal.innerText = `${de.total} | %${(de.total / population).toFixed(4)}`
                 this.rTotal.innerText = `${(de.total / co.total).toFixed(2)}%`
