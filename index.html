@@ -554,7 +554,7 @@
         async syncData(file) {
             const name = file.slice(0, -4)
 
-            if(!this.files.data[name].length){
+            if(!this.files.data[name] || !this.files.data[name].length){
                 console.log('fetch')
             try {
                 return await fetch(file.toString(), {mode: "cors"})
