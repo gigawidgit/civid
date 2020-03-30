@@ -17,7 +17,7 @@
             align-items: flex-end;
             justify-content: space-evenly;
             border: 1px solid #ddd;
-            margin-bottom: 8vmin;
+            margin-bottom: 80px;
 
             padding: 40px 30px 10px;
             position: relative;
@@ -58,13 +58,13 @@
 
         span:first-child {
             position: absolute;
-            bottom: -6vmin;
-            left: 0;
-            width: 100%;
+            bottom: -60px;
+            left: -1px;
+            width: calc(100% + 2px);
             display: flex;
             flex-direction: column;
             text-align: center;
-            padding:3vmin 0;
+            min-height:60px;
             background:#eee;
         }
 
@@ -494,8 +494,7 @@
                 this.sinput.min = 1
             }else {
                 this.sinput.max = 3
-                this.sinput.min = 0.1
-                this.sinput.val = 1
+                this.sinput.min = 0.01
             }
 
 
