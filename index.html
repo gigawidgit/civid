@@ -37,7 +37,7 @@
 
         }
 
-        .topDog {
+        div .topDog {
             position: absolute;
             top: -28px;
             height: 20px;
@@ -170,41 +170,44 @@
         <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
         <li>Total Population: <em id="countryTotal"></em></li>
         <li>
-            <label for="resetButton">Data Last Fetched: <strong id="dataLastFetched"></strong><button id="resetButton">Refresh Data</button> </label>
+            <label for="resetButton">Data Last Fetched: <strong id="dataLastFetched"></strong>
+                <button id="resetButton">Refresh Data</button>
+            </label>
         </li>
 
     </ul>
 </main>
-<section>
-</section>
+<section></section>
 <script>
 
     class Graph {
         constructor() {
-            this.all = {}
             this.section = document.querySelector('section')
-            this.confirmed = {confirmed:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`}
-            // this.confirmed = {confirmed:`confirmed.csv`}
-            this.deaths = {deaths:`https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`}
-            // this.deaths = {deaths:`deaths.csv`}
-            this.confirmedData = localStorage.getItem('confirmed')
-            this.deathsData = localStorage.getItem('deaths')
+            this.files = {
+                online: {
+                    confirmed: `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv`,
+                    deaths: `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv`
+                },
+                offline: {
+                    confirmed: 'confirmed.csv',
+                    deaths: 'deaths.csv'
+                },
+                data: {
+                    confirmed: [],
+                    deaths: []
+                }
+            }
+
             this.newTime = localStorage.getItem('newTime')
             this.currentTime = new Date()
             this.allCountries = []
+            this.currentCountry = {}
 
-            this.confirmedData = (this.confirmedData) ? JSON.parse(this.confirmedData) : false
-            this.deathsData = (this.deathsData) ? JSON.parse(this.deathsData) : false
+            for (let x in this.files.data) {
+                this.files.data[x] = (localStorage.getItem(x)) ? JSON.parse(localStorage.getItem(x)) : false
+            }
 
             this.lastTime = (this.newTime) ? this.newTime : new Date()
-
-            // https://www.worldometers.info/world-population/population-by-country/
-            // const t = {}
-            // Object.values(document.getElementById("example2").querySelectorAll('tbody tr')).map(a=>{
-            //     t[a.querySelector('td:nth-child(2)').innerText] =a.querySelector('td:nth-child(3)').innerText
-            // })
-            // JSON.stringify(t)
-
             this.populations = {
                 "China": "1,439,323,776",
                 "India": "1,380,004,385",
@@ -446,247 +449,195 @@
             this.dTotal = document.getElementById("countryDeaths")
             this.rTotal = document.getElementById("countryRatio")
             this.pTotal = document.getElementById("countryTotal")
-
-            this.dinput = document.querySelector('#deaths')
-            this.rinput = document.querySelector('#recovered')
             this.cinput = document.querySelector('#country')
-
             this.sinput = document.querySelector('#scale')
             this.tinput = document.querySelector('#totals')
             this.chinput = document.querySelector('#change')
             this.ginput = document.querySelector('#growth')
+            this.resetButton = document.getElementById("resetButton")
+
             const inputs = ["s", "c", "t", "ch", "g"].forEach(val =>
                 this[`${val}input`].addEventListener('change', () => this.buildDivs()))
-            const types = ["confirmed", "deaths"].forEach(a => this.all[a] = [])
+
             this.init()
         }
 
         async init() {
-
-            await this.buildDivs().then(a=>{
-                const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
-                document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
-                this.allCountries = this.allCountries.sort()
-                this.cinput.selectedIndex = this.allCountries.indexOf('Canada')
-                this.cinput.dispatchEvent(new Event('change'))
-            })
-
+            this.resetData()
+            const readableDate = new Date(parseInt(localStorage.getItem('newTime')))
+            document.getElementById("dataLastFetched").innerText = readableDate.toUTCString()
+            await this.buildDivs()
         }
 
-        async getValues(data, newdata) {
-            newdata = newdata || []
+        async getValues(data) {
             if (data.length) {
-                const d = data.pop()
-                const nd = await this.syncData(d)
-                newdata.push(nd)
-                return await this.getValues(data,newdata)
-            }
-            return newdata
-        }
-
-        splitData(data) {
-            return data.split(/[\n\r|\r|\n\r|\n]/gi)
-        }
-        formatData(data) {
-            if (data) {
-                return data.map((line, ind) => {
-                    if (line) {
-                        line = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
-                        if(ind && !this.allCountries.includes(line[1])) this.allCountries.push(line[1])
-                        return (line[1].toLowerCase() === this.cinput.value.toLowerCase())
-                            ? [
-                                line[1],
-                                line[0],
-                                line.slice(4),
-                                line.slice(4).reduce((a, b, c, d) => {
-                                    let e = parseInt(d[c + 1]) - parseInt(b)
-                                    e = isNaN(e) ? 0 : e
-                                    return e + parseInt(a)
-                                })
-                            ]
-                            : []
-                    }
-                }).filter(a => (a && a.length))
+                await this.syncData(data.pop()).then(async () => await this.getValues(data))
             }
         }
 
         async buildDivs() {
             this.section.innerHTML = ""
-            await this.getValues([this.deaths, this.confirmed]).then(data=>{
+            const status = `${(location.host.split(":")[0] === "localhost") ? "off" : "on"}line`
+            const that = this
 
+            await this.getValues(Object.values(this.files[status])).then(() => {
+                Object.entries(this.files.data).map(([key, val]) => {
+                    this.currentCountry[key] = {changes: [], growth: [], country: ''}
+                    this.currentCountry[key].data = that.formatData(val)
+                    this.currentCountry.country = this.currentCountry[key].data[0].country
+                    Object.values(this.currentCountry[key].data).forEach((num, ind, all) => {
+                        this.currentCountry[key].total = all.reduce((a, b) => parseInt(a || 0) + parseInt(b.total))
+                    })
+                })
 
+                this.buildSelectOptions()
 
+                let co = this.currentCountry.confirmed
+                let de = this.currentCountry.deaths
 
-                let totalC = 0
-                let totalD = 0
-                const test = data[0].map((a, b) => [a, data[data.length - 1][b]])
-                Object.values(test).map((b, f) => {
-                    let maxC = {cell: false, total: 0}
+                this.currentCountry.confirmed.data.forEach((a, b, c) => {
                     let div = document.createElement('div')
                     let span = document.createElement('span')
 
-                    span.innerHTML = `<p>${b[0][1]} - ${b[0][0]} <br> Confirmed:<strong>${b[0][3]}</strong> | Deaths:<strong>${data[1][f][3]}</strong></p>`
-
-                    totalD += parseInt(data[1][f][3])
-                    totalC += parseInt(b[0][3])
-
+                    span.innerHTML = `<p>${a.province} <br> Confirmed:<strong>${co.data[b].total}</strong> | Deaths:<strong>${de.data[b].total}</strong></p>`
                     div.appendChild(span)
+
                     this.section.appendChild(div)
+                    const sc = (this.chinput.checked) ? co.data[b].changes : (this.ginput.checked) ? co.data[b].growth : co.data[b].data
+                    const sd = (this.chinput.checked) ? de.data[b].changes : (this.ginput.checked) ? de.data[b].growth : de.data[b].data
 
-                    let label = document.createElement('em')
-                    label.innerText = maxC.total
-                    label.classList.add("topDog")
-                    if (maxC.cell) maxC.cell.append(label)
-
-                    this.loopDailyData(b, data, f, div, maxC)
-
-                    const populationName = this.populations[b[0][0]]
-                    const population = parseInt(populationName.replace(/,/gi, ''))
-
-                    this.cTotal.innerText = `${totalC} | %${(totalC / population).toFixed(4)}`
-                    this.dTotal.innerText = `${totalD} | %${(totalD / population).toFixed(4)}`
-                    this.rTotal.innerText = `${(totalD / totalC).toFixed(2)}%`
-                    this.pTotal.innerText = `${populationName}`
-
+                    this.calculateValues(sc.reverse(), sd.reverse(), div)
 
                 })
 
+                const populationName = this.populations[this.cinput.options[this.cinput.selectedIndex].value]
+                const population = parseInt(populationName.replace(/,/gi, ''))
+                this.cTotal.innerText = `${co.total} | %${(co.total / population).toFixed(4)}`
+                this.dTotal.innerText = `${de.total} | %${(de.total / population).toFixed(4)}`
+                this.rTotal.innerText = `${(de.total / co.total).toFixed(2)}%`
+                this.pTotal.innerText = `${populationName}`
 
             })
-            this.buildSelectOptions()
+
 
         }
+
+        async calculateValues(c, d, div) {
+
+            const confirm = c.pop()
+            const death = d.pop()
+
+            if (c.length && d.length) {
+
+                let cSpan = document.createElement('span')
+                cSpan.style.height = "0"
+
+                let dSpan = cSpan.cloneNode()
+                dSpan.classList.add('deaths')
+
+                div.appendChild(dSpan)
+                div.appendChild(cSpan)
+
+
+                setTimeout(() => {
+                    cSpan.style.height = parseInt(confirm) * parseFloat(this.sinput.value) + "px"
+                    dSpan.style.height = parseInt(death) * parseFloat(this.sinput.value) + "px"
+                }, 1000)
+
+                return this.calculateValues(c, d, div)
+
+            }
+
+
+        }
+
+        async syncData(file) {
+            const name = file.slice(0, -4)
+
+            if(!this.files.data[name].length){
+                console.log('fetch')
+            try {
+                return await fetch(file.toString(), {mode: "cors"})
+                    .then(async da => {
+                        const data = await da.text();
+                        if (data) {
+                            localStorage.setItem('newTime', this.currentTime.getTime().toString())
+                            localStorage.setItem(name, JSON.stringify(this.splitData(data)))
+                            this.files.data[name] = this.splitData(data).filter(a => a.length)
+
+                        }
+                        return this.files.data[name]
+                    })
+
+            } catch (err) {
+                console.log(err)
+                localStorage.clear()
+            }} else {
+                console.log('retrieve')
+                return this.files.data[name]}
+        }
+
+        splitData(data) {
+            return data.split(/[\n\r|\r|\n\r|\n]/gi)
+        }
+
+        formatData(data) {
+            if (data && data.length) {
+                return data.slice(1).map((line, ind) => {
+                    if (line) {
+                        let dt = false
+                        line = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
+                        if (ind && !this.allCountries.includes(line[1])) this.allCountries.push(line[1])
+                        this.country = (this.cinput.selectedIndex === -1) ? 'canada' : this.cinput.value.toLowerCase()
+                        if (line[1].toLowerCase() === this.country) {
+                            dt = {}
+                            dt.country = line[1]
+                            dt.province = line[0]
+                            dt.data = line.slice(4).map(a => parseInt(a))
+                            dt.total = line.slice(4).reduce((a, b, c, d) => {
+                                let e = parseInt(d[c + 1]) - parseInt(b)
+                                e = isNaN(e) ? 0 : e
+                                return parseInt(e + a)
+                            })
+                            dt.changes = dt.data.map((a,b,c)=> c[b - 1] ? Math.abs(a - c[b - 1]) : 0)
+                            dt.growth = dt.changes.map((a,b,c)=>{
+                                    let calc = (c[b - 1] && c[b + 1]) ? Math.abs(parseInt(c[b + 1]) - parseInt(a)) / Math.abs(parseInt(a) - parseInt(c[b - 1])) : 0
+                                    return (!isNaN(calc) && isFinite(calc)) ? calc : 0
+                            })
+                        }
+                        return dt
+                    } else {
+                        return false
+                    }
+                }).filter(a => a)
+            }
+        }
+
         buildSelectOptions() {
-            this.allCountries.forEach(a=>{
+            this.allCountries.sort().forEach(a => {
                 const opt = document.createElement('option')
-                opt.value = a.toLowerCase().toString()
+                if(a.toLowerCase().toString() === this.country){
+                    opt.selected = true
+                }
                 opt.innerText = a.toString()
                 this.cinput.append(opt)
             })
         }
 
-        async loopDailyData(b, data, f, div, maxC) {
-            b[1][2].forEach((c, d, e) => {
-                let bar = document.createElement('span')
-                let bar2 = document.createElement('span')
-
-                let i = b[0][2][d]
-                let j = data[1][f][2][d]
-
-                let gri = Math.abs(parseFloat(b[0][2][d + 1]) - parseFloat(i)) / Math.abs(parseFloat(i) - parseFloat(b[0][2][d - 1]))
-                gri = (!isNaN(gri) && isFinite(gri)) ? gri : false
-
-                let grj = Math.abs(parseFloat(data[1][f][2][d + 1]) - parseFloat(j)) / Math.abs(parseFloat(j) - parseFloat(data[1][f][2][d - 1]))
-                grj = (!isNaN(grj) && isFinite(grj)) ? grj : false
-
-                let ci = Math.abs(parseFloat(b[0][2][d + 1]) - parseFloat(i))
-                let gi = Math.abs(parseFloat(data[1][f][2][d + 1]) - parseFloat(j))
-
-                bar.classList.add('deaths')
-
-                bar2.style.height = "0"
-                bar.style.height = "0"
-                if (d % 7 === 0) {
-                    let day = document.createElement('span')
-                    day.classList.add('dayLine')
-                    div.appendChild(day)
-                }
-
-                // if(d % 10 === 0) {
-                //
-                //     let amount = document.createElement('span')
-                //     amount.classList.add('heightLine')
-                //
-                //     amount.style.bottom = `${ i }px`
-                //     div.appendChild(amount)
-                // }
-
-                div.appendChild(bar)
-                div.appendChild(bar2)
-
-                if (this.chinput.checked) {
-                    i = ci
-                    j = gi
-                }
-                if (this.ginput.checked) {
-                    i = gri
-                    j = grj
-                }
-                maxC = (i > maxC.total) ? {cell: bar2, total: parseInt(i)} : maxC
-                setTimeout(() => {
-                    bar2.style.height = i * parseFloat(this.sinput.value) + "px"
-                    bar.style.height = j * parseFloat(this.sinput.value) + "px"
-                }, 1000)
-
-                return maxC
-
+        resetData() {
+            this.resetButton.addEventListener('click', () => {
+                localStorage.clear()
+                window.location.reload()
             })
-        }
-
-        async syncData (file) {
-            const obj = Object.entries(file)
-            if (!this.confirmedData || !this.deathsData || Math.abs(this.currentTime.getTime()-parseInt(this.lastTime)) > 86400000 ) {
-                try {
-                    fetch(obj[0][1].toString(), {mode: "cors"})
-                        .then(async da => {
-                            const data = await da.text();
-                            if (data) {
-                                localStorage.setItem('newTime', this.currentTime.getTime().toString())
-                                localStorage.setItem(obj[0][0], JSON.stringify(this.splitData(data)))
-                            }
-
-                        })
-
-                }
-                catch (err) {
-                    console.log(err)
-                    localStorage.removeItem('confirmed')
-                    localStorage.removeItem('newTime')
-                }
-            } else {
-                if(obj[0][0].toString() === 'confirmed') {
-                    return this.formatData(JSON.parse(localStorage.getItem('confirmed')))
-                }
-                if(obj[0][0].toString() === 'deaths') {
-                    return this.formatData(JSON.parse(localStorage.getItem('deaths')))
-                }
-            }
-
-            return this.formatData(JSON.parse(localStorage.getItem(obj[0][0])))
 
         }
     }
 
-
-    // TODO: check if local or remote
     // TODO: reposition weekend lines
     // TODO: add quantity lines
-    // TODO: update to save data before country is filtered
     // TODO: Cleanup code
 
     const graph = new Graph()
-
-    // const sourceData = localStorage.getItem('confirmed')
-    // const newTime = localStorage.getItem('newTime')
-    // const currentTime = new Date()
-    //
-    // const currentData = (sourceData) ? JSON.parse(sourceData) : {}
-    // const lastTime = (newTime) ? newTime : new Date()
-    //
-    document.getElementById("resetButton")
-        .addEventListener('click',
-            () => {
-            console.log('cleared')
-            localStorage.removeItem('confirmed')
-            localStorage.removeItem('newTime')
-        })
-
-    // https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv
-
-
-    // const formatData = data => data.split(/[\r\n|\n|\r|\n\r]/gi)
-
-
 </script>
 </body>
 </html>
