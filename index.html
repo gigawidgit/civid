@@ -4,45 +4,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Visualizing CSSE at Johns Hopkins University's Data</title>
-    <base href="/" />
-    <link rel="stylesheet" href="./src/css/index.css">
+
+    <link rel="stylesheet"  href="./src/css/index.css">
 </head>
 
 <body>
-    <main>
-        <ul>
-            <li><label for="country">Country
-                    <select name="country" id="country">
+<header>
+    <div><h1>Data Visualization</h1><button id="showOptions">Toggle Options</button></div>
 
-                    </select>
-                </label></li>
-            <li><label for="scale">Scale
-                    <input type="range" id="scale" name="scale" min="0.002" max="10" value="0.25"
-                        step="0.002" /></label>
-            </li>
+    <ul>
+        <li><label for="country">Country
+            <select name="country" id="country">
 
-
-            <li id="multiplier"><label for="totals">Totals
-                    <input type="radio" id="totals" name="unit" checked="checked" /></label>
-                <label for="change">Change
-                    <input type="radio" id="change" name="unit" />
-                </label><label for="growth">Growth Factor
-                    <input type="radio" id="growth" name="unit" />
-                </label></li>
-            <li>
-                Total Confirmed for Country: <em id="countryConfirmed"></em></li>
-            <li>
-                Total Deaths for Country: <em id="countryDeaths"></em></li>
-            <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
-            <li>Total Population: <em id="countryTotal"></em></li>
-            <li>Data From: <strong id="dataLastFetched"></strong> <button id="resetButton">Refresh Data</button></li>
+            </select>
+        </label></li>
+        <li><label for="scale">Scale
+            <input type="range" id="scale" name="scale" min="0.002" max="10" value="0.25"
+                   step="0.002" /></label>
+        </li>
 
 
-        </ul>
-    </main>
+        <li id="multiplier"><label for="totals">Totals
+            <input type="radio" id="totals" name="unit" checked="checked" /></label>
+            <label for="change">Change
+                <input type="radio" id="change" name="unit" />
+            </label><label for="growth">Growth Factor
+                <input type="radio" id="growth" name="unit" />
+            </label></li>
+        <li>
+            Total Confirmed for Country: <em id="countryConfirmed"></em></li>
+        <li>
+            Total Deaths for Country: <em id="countryDeaths"></em></li>
+        <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
+        <li>Total Population: <em id="countryTotal"></em></li>
+        <li>Data From: <strong id="dataLastFetched"></strong> <button id="resetButton">Refresh Data</button></li>
+
+
+    </ul>
+</header>
+<main>
     <section></section>
+</main>
+
+<footer>©2020 All Respective Parties</footer>
     <script src="./src/js/app.js" type="module">
+
     </script>
+
 </body>
 
 </html>

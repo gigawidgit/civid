@@ -1,140 +1,107 @@
-section {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
+header {
+  width: 100%; }
+  header ul li {
+    border-bottom: 1px solid #ddd;
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    text-align: center; }
+  header ul li:last-child {
+    border: none; }
+  header ul li label {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between; }
+  header ul.hide {
+    display: none !important; }
+  header div, header h1, header button {
+    display: flex; }
 
-div {
-  display: flex;
-  flex-direction: row;
-  min-height: 200px;
-  align-items: flex-end;
-  justify-content: space-evenly;
-  border: 1px solid #ddd;
-  margin-bottom: 80px;
-
-  padding: 40px 30px 10px;
-  position: relative;
-  flex-wrap: wrap;
-}
-
-span {
-  width: 2px;
-  display: flex;
-  background: orange;
-  height: 0;
-  align-items: center;
-  justify-content: center;
-  transition: height 1s linear;
-  position: relative;
-}
-
-div .topDog {
-  position: absolute;
-  top: -28px;
-  height: 20px;
-  padding: 1px 4px;
-  background: white;
-  border: 2px solid orange;
-}
-
-div:first-of-type {
-  display: none;
-}
-
-section div:first-of-type {
-  display: flex;
-}
-
-span:first-child {
-  position: absolute;
-  bottom: -60px;
-  left: -1px;
-  width: calc(100% + 2px);
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  min-height: 60px;
-  background: #eee;
-}
-
-span:first-child p {
-  line-height: 20px;
-}
+main {
+  display: flex; }
+  main section {
+    list-style: none;
+    width: calc(100% - 8vmin);
+    margin: 0 1vmin;
+    padding: 3vmin;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    justify-content: space-evenly; }
+    main section div {
+      display: flex;
+      flex-direction: row;
+      min-height: 200px;
+      align-items: flex-end;
+      justify-content: space-evenly;
+      border: 1px solid #ddd;
+      margin-bottom: 80px;
+      padding: 40px 30px 10px;
+      position: relative;
+      flex-wrap: wrap; }
+      main section div.topDog {
+        position: absolute;
+        top: -28px;
+        height: 20px;
+        padding: 1px 4px;
+        background: white;
+        border: 2px solid orange; }
+      main section div:first-of-type {
+        display: none; }
+      main section div:first-of-type {
+        display: flex; }
+      main section div span {
+        width: 2px;
+        display: flex;
+        background: orange;
+        height: 0;
+        align-items: center;
+        justify-content: center;
+        transition: height 1s linear;
+        position: relative; }
+      main section div span:first-child {
+        position: absolute;
+        bottom: -60px;
+        left: -1px;
+        width: calc(100% + 2px);
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        min-height: 60px;
+        background: #eee; }
+      main section div span:first-child p {
+        line-height: 20px; }
+      main section div select {
+        margin: 5px; }
 
 .dayLine {
   width: 1px;
   background: #eee !important;
-  height: 100%;
-}
+  height: 100%; }
 
 .heightLine {
   height: 1px;
   background: #eee !important;
   width: 100%;
   position: absolute;
-  left: 0;
-}
-
-main {
-  display: flex;
-}
-
-select {
-  margin: 5px;
-}
-
-ul,
-section {
-  list-style: none;
-  width: calc(100% - 8vmin);
-  margin: 0 1vmin;
-  padding: 3vmin;
-  box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ddd;
-  justify-content: space-evenly;
-}
-
-li {
-  border-bottom: 1px solid #ddd;
-  padding: 20px 0;
-  display: flex;
-  justify-content: space-between;
-  text-align: center;
-}
-li:last-child {
-  border: none;
-}
-
-li label {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
-}
+  left: 0; }
 
 input {
-  width: 100%;
-}
-
-span.empty {
-  /*background: red !important;*/
-  height: 0;
-}
+  width: 100%; }
 
 .deaths {
-  background: #ff0000 !important;
-}
+  background: #ff0000 !important; }
 
 .recovered {
-  background: #0000ff !important;
-}
+  background: #0000ff !important; }
+
 select {
-  padding: 1rem;
-}
+  padding: 1rem; }
+
 #multiplier label {
-  flex-direction: column;
-}
+  flex-direction: column; }
+
 #multiplier input {
-  margin: 1rem;
-}
+  margin: 1rem; }
+
+/*# sourceMappingURL=index.css.map */

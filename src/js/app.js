@@ -38,7 +38,14 @@ class Graph {
         this.tinput = document.querySelector('#totals')
         this.chinput = document.querySelector('#change')
         this.ginput = document.querySelector('#growth')
+        this.viewMenu = document.getElementById("showOptions")
         this.resetButton = document.getElementById("resetButton")
+
+        this.viewMenu.addEventListener('click',ev=>{
+            ev.target.parentNode.nextElementSibling.classList.toggle('hide')
+
+        })
+
 
         const inputs = ["s", "c", "t", "ch", "g"].forEach(val =>
             this[`${val}input`].addEventListener('change', () => this.buildDivs()))
@@ -168,7 +175,7 @@ class Graph {
                 console.log(err)
                 localStorage.clear()
             }
-            // return this.files.data[name]
+
         } else {
             console.log('retrieve')
             return this.files.data[name]
@@ -232,9 +239,4 @@ class Graph {
 
     }
 }
-
-// TODO: reposition weekend lines
-// TODO: add quantity lines
-// TODO: Cleanup code
-
 const graph = new Graph()

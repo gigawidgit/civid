@@ -1,0 +1,137 @@
+header {
+  width:100%;
+  ul {
+    li {
+      border-bottom: 1px solid #ddd;
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+    }
+    li:last-child {
+      border: none;
+    }
+
+    li label {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+    }
+    &.hide {
+      display:none !important;
+    }
+  }
+  div, h1,  button {
+    display:flex;
+  }
+}
+
+
+main {
+  display: flex;
+  section {
+    list-style: none;
+    width: calc(100% - 8vmin);
+    margin: 0 1vmin;
+    padding: 3vmin;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    justify-content: space-evenly;
+
+    div {
+      display: flex;
+      flex-direction: row;
+      min-height: 200px;
+      align-items: flex-end;
+      justify-content: space-evenly;
+      border: 1px solid #ddd;
+      margin-bottom: 80px;
+      padding: 40px 30px 10px;
+      position: relative;
+      flex-wrap: wrap;
+      &.topDog {
+        position: absolute;
+        top: -28px;
+        height: 20px;
+        padding: 1px 4px;
+        background: white;
+        border: 2px solid orange;
+      }
+      &:first-of-type {
+        display: none;
+      }
+      &:first-of-type {
+        display: flex;
+      }
+      span {
+        width: 2px;
+        display: flex;
+        background: orange;
+        height: 0;
+        align-items: center;
+        justify-content: center;
+        transition: height 1s linear;
+        position: relative;
+      }
+      span:first-child {
+        position: absolute;
+        bottom: -60px;
+        left: -1px;
+        width: calc(100% + 2px);
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        min-height: 60px;
+        background: #eee;
+      }
+      span:first-child p {
+        line-height: 20px;
+      }
+      select {
+        margin: 5px;
+      }
+    }
+  }
+}
+
+
+  .dayLine {
+    width: 1px;
+    background: #eee !important;
+    height: 100%;
+  }
+
+  .heightLine {
+    height: 1px;
+    background: #eee !important;
+    width: 100%;
+    position: absolute;
+    left: 0;
+  }
+
+
+
+
+
+  input {
+    width: 100%;
+  }
+
+  .deaths {
+    background: #ff0000 !important;
+  }
+
+  .recovered {
+    background: #0000ff !important;
+  }
+  select {
+    padding: 1rem;
+  }
+  #multiplier label {
+    flex-direction: column;
+  }
+  #multiplier input {
+    margin: 1rem;
+  }
+
