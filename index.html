@@ -588,8 +588,8 @@
                         let dt = false
                         line = line.replace(`, `, ` `).replace(/"/gi, ``).split(`,`)
                         if (ind && !this.allCountries.includes(line[1])) this.allCountries.push(line[1])
-                        this.country = (this.cinput.selectedIndex === -1) ? 'canada' : this.cinput.value.toLowerCase()
-                        if (line[1].toLowerCase() === this.country) {
+                        this.country = (this.cinput.selectedIndex === -1) ? 'Canada' : this.cinput.value
+                        if (line[1] === this.country) {
                             dt = {}
                             dt.country = line[1]
                             dt.province = line[0]
@@ -616,7 +616,7 @@
         buildSelectOptions() {
             this.allCountries.sort().forEach(a => {
                 const opt = document.createElement('option')
-                if(a.toLowerCase().toString() === this.country){
+                if(a === this.country){
                     opt.selected = true
                 }
                 opt.innerText = a.toString()
