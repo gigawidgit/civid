@@ -145,6 +145,12 @@
         select {
             padding:1rem;
         }
+        #multiplier label{
+            flex-direction: column;
+        }
+        #multiplier input {
+            margin:1rem;
+        }
 
     </style>
 </head>
@@ -161,7 +167,7 @@
         </li>
 
 
-        <li><label for="totals">Totals
+        <li id="multiplier"><label for="totals">Totals
             <input type="radio" id="totals" name="unit" checked="checked"/></label>
             <label for="change">Change
                 <input type="radio" id="change" name="unit"/>
