@@ -1,4 +1,4 @@
-const populations = {
+export const populations = {
     "China": "1,439,323,776",
     "India": "1,380,004,385",
     "United States": "331,002,651",

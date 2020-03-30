@@ -1,3 +1,4 @@
+import { populations } from "./populations.js";
 class Graph {
     constructor() {
         this.section = document.querySelector('section')
