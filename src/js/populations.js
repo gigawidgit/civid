@@ -1,7 +1,7 @@
 export const populations = {
     "China": "1,439,323,776",
     "India": "1,380,004,385",
-    "United States": "331,002,651",
+    "US": "331,002,651",
     "Indonesia": "273,523,615",
     "Pakistan": "220,892,340",
     "Brazil": "212,559,417",
