@@ -11,13 +11,8 @@
 <body>
 <header>
     <div><h1>Data Visualization</h1><button id="showOptions">Toggle Options</button></div>
-
     <ul>
-        <li><label for="country">Country
-            <select name="country" id="country">
 
-            </select>
-        </label></li>
         <li><label for="scale">Scale
             <input type="range" id="scale" name="scale" min="0.002" max="10" value="0.25"
                    step="0.002" /></label>
@@ -31,18 +26,26 @@
             </label><label for="growth">Growth Factor
                 <input type="radio" id="growth" name="unit" />
             </label></li>
-        <li>
-            Total Confirmed for Country: <em id="countryConfirmed"></em></li>
-        <li>
-            Total Deaths for Country: <em id="countryDeaths"></em></li>
-        <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
-        <li>Total Population: <em id="countryTotal"></em></li>
+
         <li>Data From: <strong id="dataLastFetched"></strong> <button id="resetButton">Refresh Data</button></li>
 
 
     </ul>
 </header>
 <main>
+    <ul>
+        <li><label for="country">Country
+            <select name="country" id="country">
+
+            </select>
+        </label></li>
+        <li>
+            Total Confirmed for Country: <em id="countryConfirmed"></em></li>
+        <li>
+            Total Deaths for Country: <em id="countryDeaths"></em></li>
+        <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
+        <li>Total Population: <em id="countryTotal"></em></li>
+    </ul>
     <section></section>
 </main>
 

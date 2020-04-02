@@ -1,29 +1,65 @@
 header {
-  width: 100%; }
-  header ul li {
-    border-bottom: 1px solid #ddd;
-    padding: 20px 0;
+  width: calc(100% - 2rem);
+  margin: 1rem; }
+  header div {
     display: flex;
     justify-content: space-between;
-    text-align: center; }
-  header ul li:last-child {
-    border: none; }
-  header ul li label {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between; }
-  header ul.hide {
-    display: none !important; }
-  header div, header h1, header button {
-    display: flex; }
+    align-items: flex-start; }
+    header div h1, header div button {
+      height: 50px;
+      line-height: 50px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin: 0; }
+  header ul {
+    padding: 1rem;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc; }
+    header ul li {
+      border-bottom: 1px solid #ddd;
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      text-align: center; }
+    header ul li:last-child {
+      border: none; }
+    header ul li label {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between; }
+    header ul.hide {
+      display: none !important; }
 
 main {
-  display: flex; }
+  display: flex;
+  flex-direction: column; }
+  main ul {
+    display: flex;
+    width: calc(100% - 4rem);
+    margin: 1rem;
+    padding: 1rem;
+    flex-direction: column;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc; }
+    main ul li {
+      width: calc(100% - 2rem);
+      padding: 0.25rem 1rem;
+      display: flex;
+      justify-content: space-between; }
+      main ul li label {
+        width: 100%;
+        justify-content: space-between; }
+      main ul li select {
+        display: flex;
+        width: 100%; }
   main section {
+    display: flex;
+    flex-direction: column;
     list-style: none;
-    width: calc(100% - 8vmin);
-    margin: 0 1vmin;
+    width: calc(100% - 12vmin);
+    margin: 3vmin;
     padding: 3vmin;
     box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
@@ -51,7 +87,7 @@ main {
       main section div:first-of-type {
         display: flex; }
       main section div span {
-        width: 2px;
+        width: 1px;
         display: flex;
         background: orange;
         height: 0;
@@ -73,6 +109,10 @@ main {
         line-height: 20px; }
       main section div select {
         margin: 5px; }
+
+footer {
+  padding: 1rem;
+  text-align: center; }
 
 .dayLine {
   width: 1px;

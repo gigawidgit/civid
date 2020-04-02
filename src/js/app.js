@@ -81,7 +81,7 @@ class Graph {
             Object.entries(this.files.data).map(([key, val], i) => {
                 this.currentCountry[key] = {}
                 this.currentCountry[key].data = that.formatData(val)
-                this.buildSelectOptions()
+                if(!this.cinput.options.length) this.buildSelectOptions()
                 let total = 0
                 Object.values(this.currentCountry[key].data).forEach((num, ind, all) => {
                     if (!i && !ind) this.currentCountry.country = num.country

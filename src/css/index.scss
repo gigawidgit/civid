@@ -1,6 +1,23 @@
 header {
-  width:100%;
+  width:calc(100% - 2rem);
+  margin:1rem;
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    h1 , button {
+      height:50px;
+      line-height:50px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin:0;
+    }
+  }
   ul {
+    padding:1rem;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
+    border:1px solid #ccc;
     li {
       border-bottom: 1px solid #ddd;
       padding: 20px 0;
@@ -22,18 +39,45 @@ header {
       display:none !important;
     }
   }
-  div, h1,  button {
-    display:flex;
-  }
+
 }
 
 
 main {
   display: flex;
+  flex-direction: column;
+  ul {
+    display:flex;
+    width:calc(100% - 4rem);
+    margin:1rem;
+    padding:1rem;
+    flex-direction: column;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
+    border:1px solid #ccc;
+    li {
+      width:calc(100% - 2rem);
+      padding:0.25rem 1rem;
+      display:flex;
+      justify-content: space-between;
+      label {
+        width:100%;
+        justify-content: space-between;
+      }
+      select {
+        display: flex;
+        width:100%;
+      }
+
+
+
+    }
+  }
   section {
+    display:flex;
+    flex-direction: column;
     list-style: none;
-    width: calc(100% - 8vmin);
-    margin: 0 1vmin;
+    width: calc(100% - 12vmin);
+    margin: 3vmin;
     padding: 3vmin;
     box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
@@ -65,7 +109,7 @@ main {
         display: flex;
       }
       span {
-        width: 2px;
+        width: 1px;
         display: flex;
         background: orange;
         height: 0;
@@ -95,6 +139,10 @@ main {
   }
 }
 
+footer {
+  padding:1rem;
+  text-align: center;
+}
 
   .dayLine {
     width: 1px;
