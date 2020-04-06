@@ -11,7 +11,7 @@
 <body>
 <header>
     <div><h1>Data Visualization</h1><button id="showOptions">Toggle Options</button></div>
-    <ul>
+    <ul class="hide">
 
         <li><label for="scale">Scale
             <input type="range" id="scale" name="scale" min="0.002" max="10" value="0.25"
@@ -21,7 +21,7 @@
 
         <li id="multiplier"><label for="totals">Totals
             <input type="radio" id="totals" name="unit" checked="checked" /></label>
-            <label for="totals">Log Scale<input type="checkbox" id="totalLog" name="totalLog" checked="checked" /></label>
+            <label for="totals">Log Scale<input type="checkbox" id="totalLog" name="totalLog" /></label>
             <label for="change">Change
                 <input type="radio" id="change" name="unit" />
             </label><label for="growth">Growth Factor

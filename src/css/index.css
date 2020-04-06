@@ -56,25 +56,28 @@ main {
         width: 100%; }
   main section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     list-style: none;
     width: calc(100% - 12vmin);
     margin: 3vmin;
     padding: 3vmin;
     box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
-    justify-content: space-evenly; }
+    justify-content: space-evenly;
+    flex-wrap: wrap; }
+    @media only screen and (min-width: 768px) {
+      main section div {
+        width: 20% !important; } }
     main section div {
       display: flex;
       flex-direction: row;
       min-height: 200px;
       align-items: flex-end;
-      justify-content: space-evenly;
+      justify-content: flex-end;
       border: 1px solid #ddd;
       margin-bottom: 80px;
       padding: 40px 30px 10px;
-      position: relative;
-      flex-wrap: wrap; }
+      position: relative; }
       main section div.topDog {
         position: absolute;
         top: -28px;
