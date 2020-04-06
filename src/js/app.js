@@ -36,6 +36,7 @@ class Graph {
         this.cinput = document.querySelector('#country')
         this.sinput = document.querySelector('#scale')
         this.tinput = document.querySelector('#totals')
+        this.tlinput = document.querySelector('#totalLog')
         this.chinput = document.querySelector('#change')
         this.ginput = document.querySelector('#growth')
         this.viewMenu = document.getElementById("showOptions")
@@ -47,7 +48,7 @@ class Graph {
         })
 
 
-        const inputs = ["s", "c", "t", "ch", "g"].forEach(val =>
+        const inputs = ["s", "c", "t", "ch", "g", "tl"].forEach(val =>
             this[`${val}input`].addEventListener('change', () => this.buildDivs()))
 
         this.init()
@@ -102,9 +103,9 @@ class Graph {
                 div.appendChild(span)
 
                 this.section.appendChild(div)
-                const sc = (this.chinput.checked) ? co.data[b].changes : (this.ginput.checked) ? co.data[b].growth : co.data[b].data
-                const sd = (this.chinput.checked) ? de.data[b].changes : (this.ginput.checked) ? de.data[b].growth : de.data[b].data
-
+                const sc = (this.chinput.checked) ? co.data[b].changes : (this.ginput.checked) ? co.data[b].growth : (this.tlinput.checked) ? co.data[b].log : co.data[b].data
+                const sd = (this.chinput.checked) ? de.data[b].changes : (this.ginput.checked) ? de.data[b].growth : (this.tlinput.checked) ? de.data[b].log : de.data[b].data
+                // console.log(sc, sd)
                 this.calculateValues(sc.reverse(), sd.reverse(), div)
 
             })
@@ -157,7 +158,7 @@ class Graph {
         const name = file[0]
 
         if (!this.files.data[name] || !this.files.data[name].length) {
-            console.log('fetch')
+            // console.log('fetch')
             try {
                 return await fetch(file[1].toString(), { mode: "cors" })
                     .then(async da => {
@@ -172,12 +173,12 @@ class Graph {
                     })
 
             } catch (err) {
-                console.log(err)
+                console.log(`Error: ${err}`)
                 localStorage.clear()
             }
 
         } else {
-            console.log('retrieve')
+            // console.log('retrieve')
             return this.files.data[name]
         }
     }
@@ -210,6 +211,10 @@ class Graph {
                                 ? Math.abs(c[b + 1] - a) / Math.abs(a - c[b - 1])
                                 : 0
                             return (!isNaN(calc) && isFinite(calc)) ? parseFloat(calc) : 0
+                        })
+                        dt.log = dt.data.map((a, b, c) => {
+                            let calc = Math.log(parseFloat(a))
+                            return (!isNaN(calc) && isFinite(calc)) ? calc : 0
                         })
                     }
                     return dt
