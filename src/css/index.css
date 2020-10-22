@@ -1,6 +1,14 @@
 header {
   width: calc(100% - 2rem);
-  margin: 1rem; }
+  padding: 1rem;
+  margin: 0;
+  margin-bottom: 1rem;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: white;
+  z-index: 1; }
   header div {
     display: flex;
     justify-content: space-between;
@@ -11,7 +19,7 @@ header {
       display: flex;
       align-items: flex-start;
       justify-content: flex-start;
-      margin: 0; }
+      margin: 0 1rem; }
   header ul {
     padding: 1rem;
     box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
@@ -73,9 +81,9 @@ main {
       flex-direction: row;
       min-height: 200px;
       align-items: flex-end;
-      justify-content: flex-end;
+      justify-content: left;
       border: 1px solid #ddd;
-      margin-bottom: 80px;
+      margin-bottom: 100px;
       padding: 40px 30px 10px;
       position: relative; }
       main section div.topDog {
@@ -90,7 +98,7 @@ main {
       main section div:first-of-type {
         display: flex; }
       main section div span {
-        width: 1px;
+        width: 3px;
         display: flex;
         background: orange;
         height: 0;
@@ -98,20 +106,19 @@ main {
         justify-content: center;
         transition: height 1s linear;
         position: relative; }
-      main section div span:first-child {
-        position: absolute;
-        bottom: -60px;
-        left: -1px;
-        width: calc(100% + 2px);
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        min-height: 60px;
-        background: #eee; }
-      main section div span:first-child p {
-        line-height: 20px; }
-      main section div select {
-        margin: 5px; }
+        main section div span.label {
+          position: absolute;
+          bottom: -90px;
+          left: -1px;
+          width: calc(100% + 2px);
+          display: flex;
+          flex-direction: column;
+          text-align: center;
+          height: 90px; }
+        main section div span span:first-child p {
+          line-height: 20px; }
+        main section div span select {
+          margin: 5px; }
 
 footer {
   padding: 1rem;
@@ -146,5 +153,12 @@ select {
 
 #multiplier input {
   margin: 1rem; }
+
+.date {
+  transform: rotate(90deg) !important;
+  z-index: 50 !important;
+  font-size: 12px;
+  background: none !important;
+  position: absolute !important; }
 
 /*# sourceMappingURL=index.css.map */

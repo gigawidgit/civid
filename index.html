@@ -3,15 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Visualizing CSSE at Johns Hopkins University's Data</title>
-
+    <title>Visualizing CSSE at Johns Hopkins University's Covid-19 Data</title>
     <link rel="stylesheet"  href="./src/css/index.css">
 </head>
 
 <body>
 <header>
-    <div><h1>Data Visualization</h1><button id="showOptions">Toggle Options</button></div>
-    <ul class="hide">
+    <div><h1>Data Visualization</h1>
+        <div>
+            <button id="showDetails">Toggle Details</button>
+            <button id="showOptions">Toggle Options</button>
+
+        </div>
+    </div>
+    <ul class="hide" id="options">
 
         <li><label for="scale">Scale
             <input type="range" id="scale" name="scale" min="0.002" max="10" value="0.25"
@@ -32,9 +37,7 @@
 
 
     </ul>
-</header>
-<main>
-    <ul>
+    <ul id="details">
         <li><label for="country">Country
             <select name="country" id="country">
 
@@ -47,6 +50,9 @@
         <li>Confirmed to Death Ratio: <em id="countryRatio"></em></li>
         <li>Total Population: <em id="countryTotal"></em></li>
     </ul>
+</header>
+<main>
+
     <section></section>
 </main>
 
